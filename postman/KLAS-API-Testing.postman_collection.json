@@ -1,0 +1,2754 @@
+{
+  "info": {
+    "name": "KLAS API Testing",
+    "description": "System Integration Test Collection for KLAS (Kelas Absensi System).\n\nPrerequisites:\n1. Start local Supabase: supabase start\n2. Run seed script: ./supabase/scripts/create-auth-users.ps1 -Local\n3. Import the klas-local environment\n4. Set anon_key in environment\n5. Run 01-Auth folder first to get tokens\n\nAll endpoints use POST method and require Authorization header (auto-set via tests).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "01 - Authentication",
+      "item": [
+        {
+          "name": "1.1 Login — Mahasiswa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has access_token', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('session');",
+                  "  pm.expect(body.session).to.have.property('access_token');",
+                  "  pm.expect(body.session.access_token).to.be.a('string');",
+                  "});",
+                  "pm.test('Role is mahasiswa', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.user.role).to.eql('mahasiswa');",
+                  "});",
+                  "pm.test('Has refresh_token', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.session).to.have.property('refresh_token');",
+                  "});",
+                  "pm.test('Has user_id', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.user).to.have.property('id');",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.environment.set('mahasiswa_token', body.session.access_token);",
+                  "  pm.environment.set('mahasiswa_user_id', body.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"10221001\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Login — Dosen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Role is dosen', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.user.role).to.eql('dosen');",
+                  "});",
+                  "pm.test('Has access_token', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.session).to.have.property('access_token');",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.environment.set('dosen_token', body.session.access_token);",
+                  "  pm.environment.set('dosen_user_id', body.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"0012345678\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Login — Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Role is admin', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.user.role).to.eql('admin');",
+                  "});",
+                  "pm.test('Has access_token', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.session).to.have.property('access_token');",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.environment.set('admin_token', body.session.access_token);",
+                  "  pm.environment.set('admin_user_id', body.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"admin@klas.id\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "1.4 Login — Invalid Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 401', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "});",
+                  "pm.test('Has error message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "  pm.expect(body.error).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"10221001\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "1.5 Login — Empty Identifier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has validation error', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "1.6 Login — Nonexistent User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 401', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "});",
+                  "pm.test('Has error message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"99999999\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "1.7 Refresh Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has new access_token', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.session).to.have.property('access_token');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{admin_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/refresh-session",
+              "host": ["{{base_url}}"],
+              "path": ["refresh-session"]
+            }
+          }
+        },
+        {
+          "name": "1.8 Refresh — Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 401 or 400', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 400]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"invalid-refresh-token-abc123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/refresh-session",
+              "host": ["{{base_url}}"],
+              "path": ["refresh-session"]
+            }
+          }
+        },
+        {
+          "name": "1.9 Change Password — Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"password123\",\n  \"new_password\": \"newpassword456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["change-password"]
+            }
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{admin_token}}",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        {
+          "name": "1.10 Change Password — Wrong Old Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 401', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"wrongoldpassword\",\n  \"new_password\": \"newpassword456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["change-password"]
+            }
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{admin_token}}",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Mahasiswa Operations",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{mahasiswa_token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "2.1 Get My Dashboard",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has date and day', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('date');",
+                  "  pm.expect(body).to.have.property('day');",
+                  "});",
+                  "pm.test('Has classes array', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('classes');",
+                  "  pm.expect(body.classes).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-my-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["get-my-dashboard"]
+            }
+          }
+        },
+        {
+          "name": "2.2 Get My Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has profile fields', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('nim');",
+                  "  pm.expect(body).to.have.property('nama');",
+                  "  pm.expect(body).to.have.property('prodi');",
+                  "  pm.expect(body).to.have.property('gpa');",
+                  "});",
+                  "pm.test('Prodi has kode_prodi and nama_prodi', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.prodi).to.have.property('kode_prodi');",
+                  "  pm.expect(body.prodi).to.have.property('nama_prodi');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-my-profile",
+              "host": ["{{base_url}}"],
+              "path": ["get-my-profile"]
+            }
+          }
+        },
+        {
+          "name": "2.3 Get My Logs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has logs and pagination', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('logs');",
+                  "  pm.expect(body).to.have.property('pagination');",
+                  "  pm.expect(body.logs).to.be.an('array');",
+                  "});",
+                  "pm.test('Pagination has required fields', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.pagination).to.have.property('page');",
+                  "  pm.expect(body.pagination).to.have.property('total');",
+                  "  pm.expect(body.pagination).to.have.property('total_pages');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page\": 1,\n  \"limit\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-my-logs",
+              "host": ["{{base_url}}"],
+              "path": ["get-my-logs"]
+            }
+          }
+        },
+        {
+          "name": "2.4 Get Attendance Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is valid', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-attendance-stats",
+              "host": ["{{base_url}}"],
+              "path": ["get-attendance-stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Dosen Operations",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{dosen_token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "3.1 Get Dosen Dashboard",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has courses', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('courses');",
+                  "  pm.expect(body.courses).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-dosen-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["get-dosen-dashboard"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Get Dosen Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has profile fields', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('nama');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-dosen-profile",
+              "host": ["{{base_url}}"],
+              "path": ["get-dosen-profile"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Update Dosen Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Dr. Test Dosen Updated\",\n  \"jenis_kelamin\": \"L\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/update-dosen-profile",
+              "host": ["{{base_url}}"],
+              "path": ["update-dosen-profile"]
+            }
+          }
+        },
+        {
+          "name": "3.4 Open Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has sesi_id', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('sesi_id');",
+                  "  pm.expect(body).to.have.property('status', 'live');",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.environment.set('test_sesi_id', body.sesi_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jadwal_id\": \"{{test_jadwal_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/open-session",
+              "host": ["{{base_url}}"],
+              "path": ["open-session"]
+            }
+          }
+        },
+        {
+          "name": "3.5 Open Session — Already Live (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 (conflict)', () => pm.response.to.have.status(400));",
+                  "pm.test('Has error about live session', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jadwal_id\": \"{{test_jadwal_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/open-session",
+              "host": ["{{base_url}}"],
+              "path": ["open-session"]
+            }
+          }
+        },
+        {
+          "name": "3.6 Get Live Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has session data', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('sesi_id');",
+                  "  pm.expect(body).to.have.property('status');",
+                  "  pm.expect(body).to.have.property('counts');",
+                  "  pm.expect(body.counts).to.have.property('present');",
+                  "  pm.expect(body.counts).to.have.property('absent');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sesi_id\": \"{{test_sesi_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-live-session",
+              "host": ["{{base_url}}"],
+              "path": ["get-live-session"]
+            }
+          }
+        },
+        {
+          "name": "3.7 Update Session Settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sesi_id\": \"{{test_sesi_id}}\",\n  \"geofence_radius_m\": 100,\n  \"qr_rotates_every\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/update-session-settings",
+              "host": ["{{base_url}}"],
+              "path": ["update-session-settings"]
+            }
+          }
+        },
+        {
+          "name": "3.8 List Sessions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has sessions and pagination', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('sessions');",
+                  "  pm.expect(body).to.have.property('pagination');",
+                  "  pm.expect(body.sessions).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jadwal_id\": \"{{test_jadwal_id}}\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/list-sessions",
+              "host": ["{{base_url}}"],
+              "path": ["list-sessions"]
+            }
+          }
+        },
+        {
+          "name": "3.9 Get Course Students",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has students and pagination', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('students');",
+                  "  pm.expect(body).to.have.property('pagination');",
+                  "  pm.expect(body.students).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jadwal_id\": \"{{test_jadwal_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-course-students",
+              "host": ["{{base_url}}"],
+              "path": ["get-course-students"]
+            }
+          }
+        },
+        {
+          "name": "3.10 Get Dosen Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has report data', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jadwal_id\": \"{{test_jadwal_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-dosen-report",
+              "host": ["{{base_url}}"],
+              "path": ["get-dosen-report"]
+            }
+          }
+        },
+        {
+          "name": "3.11 Close Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sesi_id\": \"{{test_sesi_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/close-session",
+              "host": ["{{base_url}}"],
+              "path": ["close-session"]
+            }
+          }
+        },
+        {
+          "name": "3.12 Reopen Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has sesi_id and status', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('sesi_id');",
+                  "  pm.expect(body).to.have.property('status');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sesi_id\": \"{{test_sesi_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reopen-session",
+              "host": ["{{base_url}}"],
+              "path": ["reopen-session"]
+            }
+          }
+        },
+        {
+          "name": "3.13 Update Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sesi_id\": \"{{test_sesi_id}}\",\n  \"geofence_radius_m\": 75\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/update-session",
+              "host": ["{{base_url}}"],
+              "path": ["update-session"]
+            }
+          }
+        },
+        {
+          "name": "3.14 Export Report (CSV)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns CSV data', () => {",
+                  "  const body = pm.response.text();",
+                  "  pm.expect(body).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jadwal_id\": \"{{test_jadwal_id}}\",\n  \"format\": \"csv\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/export-report",
+              "host": ["{{base_url}}"],
+              "path": ["export-report"]
+            }
+          }
+        },
+        {
+          "name": "3.15 Delete Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{anon_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sesi_id\": \"{{test_sesi_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/delete-session",
+              "host": ["{{base_url}}"],
+              "path": ["delete-session"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Admin CRUD",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{admin_token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "04a - Mahasiswa CRUD",
+          "item": [
+            {
+              "name": "4a.1 List Mahasiswa",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has mahasiswa and pagination', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('mahasiswa');",
+                      "  pm.expect(body).to.have.property('pagination');",
+                      "  pm.expect(body.mahasiswa).to.be.an('array');",
+                      "});",
+                      "pm.test('Pagination has required fields', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body.pagination).to.have.property('page');",
+                      "  pm.expect(body.pagination).to.have.property('total');",
+                      "  pm.expect(body.pagination).to.have.property('total_pages');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"list\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mahasiswa",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mahasiswa"]
+                }
+              }
+            },
+            {
+              "name": "4a.2 Create Mahasiswa",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                      "pm.test('Has mahasiswa_id', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('mahasiswa_id');",
+                      "  pm.expect(body).to.have.property('nim');",
+                      "});",
+                      "if (pm.response.code === 201) {",
+                      "  const body = pm.response.json();",
+                      "  pm.environment.set('test_mahasiswa_id', body.mahasiswa_id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"create\",\n  \"nim\": \"TEST9999\",\n  \"nama\": \"Test Mahasiswa Postman\",\n  \"prodi_id\": {{test_prodi_id}},\n  \"angkatan\": \"2024\",\n  \"jenis_kelamin\": \"L\",\n  \"gpa\": 3.50\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mahasiswa",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mahasiswa"]
+                }
+              }
+            },
+            {
+              "name": "4a.3 Update Mahasiswa",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has updated fields', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('mahasiswa_id');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"update\",\n  \"mahasiswa_id\": \"{{test_mahasiswa_id}}\",\n  \"nama\": \"Test Mahasiswa Updated\",\n  \"gpa\": 3.75\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mahasiswa",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mahasiswa"]
+                }
+              }
+            },
+            {
+              "name": "4a.4 Delete (Deactivate) Mahasiswa",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has success message', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('message');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"delete\",\n  \"mahasiswa_id\": \"{{test_mahasiswa_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mahasiswa",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mahasiswa"]
+                }
+              }
+            },
+            {
+              "name": "4a.5 List — Search Filter",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Returns filtered results', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body.mahasiswa).to.be.an('array');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"list\",\n  \"search\": \"10221001\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mahasiswa",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mahasiswa"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "04b - Dosen CRUD",
+          "item": [
+            {
+              "name": "4b.1 List Dosen",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has data and total', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('data');",
+                      "  pm.expect(body).to.have.property('total');",
+                      "  pm.expect(body.data).to.be.an('array');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"list\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-dosen",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-dosen"]
+                }
+              }
+            },
+            {
+              "name": "4b.2 Create Dosen",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                      "pm.test('Has dosen_id', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('dosen_id');",
+                      "});",
+                      "if (pm.response.code === 201) {",
+                      "  const body = pm.response.json();",
+                      "  pm.environment.set('test_dosen_id', body.dosen_id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"create\",\n  \"nip\": \"999888777\",\n  \"nama\": \"Dr. Test Dosen Postman\",\n  \"prodi_id\": {{test_prodi_id}},\n  \"jenis_kelamin\": \"P\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-dosen",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-dosen"]
+                }
+              }
+            },
+            {
+              "name": "4b.3 Update Dosen",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has dosen_id', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('dosen_id');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"update\",\n  \"dosen_id\": \"{{test_dosen_id}}\",\n  \"nama\": \"Dr. Test Dosen Updated\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-dosen",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-dosen"]
+                }
+              }
+            },
+            {
+              "name": "4b.4 Delete (Deactivate) Dosen",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has success message', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('message');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"delete\",\n  \"dosen_id\": \"{{test_dosen_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-dosen",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-dosen"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "04c - Mata Kuliah CRUD",
+          "item": [
+            {
+              "name": "4c.1 List Mata Kuliah",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Returns data', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.be.an('object');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"list\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mata-kuliah",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mata-kuliah"]
+                }
+              }
+            },
+            {
+              "name": "4c.2 Create Mata Kuliah",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                      "pm.test('Has mk_id', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('mk_id');",
+                      "});",
+                      "if (pm.response.code === 201) {",
+                      "  const body = pm.response.json();",
+                      "  pm.environment.set('test_mk_id', body.mk_id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"create\",\n  \"kode_mk\": \"POSTMAN001\",\n  \"nama_mk\": \"Mata Kuliah Test Postman\",\n  \"sks\": 3,\n  \"prodi_id\": {{test_prodi_id}}\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mata-kuliah",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mata-kuliah"]
+                }
+              }
+            },
+            {
+              "name": "4c.3 Update Mata Kuliah",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has mk_id', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('mk_id');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"update\",\n  \"mk_id\": \"{{test_mk_id}}\",\n  \"nama_mk\": \"Mata Kuliah Updated\",\n  \"sks\": 4\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mata-kuliah",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mata-kuliah"]
+                }
+              }
+            },
+            {
+              "name": "4c.4 Delete Mata Kuliah",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                      "pm.test('Has success message', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('message');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"delete\",\n  \"mk_id\": \"{{test_mk_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-mata-kuliah",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-mata-kuliah"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "04d - Ruangan CRUD",
+          "item": [
+            {
+              "name": "4d.1 List Ruangan",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"list\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-ruangan",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-ruangan"]
+                }
+              }
+            },
+            {
+              "name": "4d.2 Create Ruangan",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                      "pm.test('Has ruangan_id', () => {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body).to.have.property('ruangan_id');",
+                      "});",
+                      "if (pm.response.code === 201) {",
+                      "  const body = pm.response.json();",
+                      "  pm.environment.set('test_ruangan_id', body.ruangan_id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"create\",\n  \"kode_ruangan\": \"POSTMAN-TEST\",\n  \"nama_ruangan\": \"Ruang Test Postman\",\n  \"latitude\": -6.200000,\n  \"longitude\": 106.816666,\n  \"geofence_radius_m\": 50\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-ruangan",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-ruangan"]
+                }
+              }
+            },
+            {
+              "name": "4d.3 Update Ruangan",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"update\",\n  \"ruangan_id\": \"{{test_ruangan_id}}\",\n  \"nama_ruangan\": \"Ruang Updated\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-ruangan",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-ruangan"]
+                }
+              }
+            },
+            {
+              "name": "4d.4 Delete Ruangan",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"delete\",\n  \"ruangan_id\": \"{{test_ruangan_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-ruangan",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-ruangan"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "04e - Prodi CRUD",
+          "item": [
+            {
+              "name": "4e.1 List Prodi",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"list\",\n  \"page\": 1,\n  \"limit\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-prodi",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-prodi"]
+                }
+              }
+            },
+            {
+              "name": "4e.2 Create Prodi",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"create\",\n  \"kode_prodi\": \"POSTMAN\",\n  \"nama_prodi\": \"Prodi Test Postman\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-prodi",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-prodi"]
+                }
+              }
+            },
+            {
+              "name": "4e.3 Update Prodi",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"update\",\n  \"prodi_id\": {{test_prodi_id}},\n  \"nama_prodi\": \"Prodi Updated\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-prodi",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-prodi"]
+                }
+              }
+            },
+            {
+              "name": "4e.4 Delete Prodi",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "apikey", "value": "{{anon_key}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"delete\",\n  \"prodi_id\": {{test_prodi_id}}\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/crud-prodi",
+                  "host": ["{{base_url}}"],
+                  "path": ["crud-prodi"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Admin Data & Config",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{admin_token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "5.1 Get Admin Dashboard",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has dashboard data', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/get-admin-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["get-admin-dashboard"]
+            }
+          }
+        },
+        {
+          "name": "5.2 Get Global Attendance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has sessions and pagination', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('sessions');",
+                  "  pm.expect(body).to.have.property('pagination');",
+                  "  pm.expect(body.sessions).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}" },
+            "url": {
+              "raw": "{{base_url}}/get-global-attendance",
+              "host": ["{{base_url}}"],
+              "path": ["get-global-attendance"]
+            }
+          }
+        },
+        {
+          "name": "5.3 Get Audit Logs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has logs and pagination', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('logs');",
+                  "  pm.expect(body).to.have.property('pagination');",
+                  "  pm.expect(body.logs).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}" },
+            "url": {
+              "raw": "{{base_url}}/get-audit-logs",
+              "host": ["{{base_url}}"],
+              "path": ["get-audit-logs"]
+            }
+          }
+        },
+        {
+          "name": "5.4 Get Audit Logs — With Category Filter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns filtered logs', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.logs).to.be.an('array');",
+                  "  body.logs.forEach(log => {",
+                  "    pm.expect(log.kategori).to.eql('Authentication');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"page\": 1,\n  \"limit\": 20,\n  \"kategori\": \"Authentication\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/get-audit-logs",
+              "host": ["{{base_url}}"],
+              "path": ["get-audit-logs"]
+            }
+          }
+        },
+        {
+          "name": "5.5 Get Settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has settings', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('settings');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"get\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/update-settings",
+              "host": ["{{base_url}}"],
+              "path": ["update-settings"]
+            }
+          }
+        },
+        {
+          "name": "5.6 Update Settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has settings', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('settings');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"upsert\",\n  \"settings\": {\n    \"tfa_enabled\": false,\n    \"session_timeout\": 3600\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/update-settings",
+              "host": ["{{base_url}}"],
+              "path": ["update-settings"]
+            }
+          }
+        },
+        {
+          "name": "5.7 Get Role Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has data', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('data');",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"get\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/update-role-permissions",
+              "host": ["{{base_url}}"],
+              "path": ["update-role-permissions"]
+            }
+          }
+        },
+        {
+          "name": "5.8 Get Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"list\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/get-notifications",
+              "host": ["{{base_url}}"],
+              "path": ["get-notifications"]
+            }
+          }
+        },
+        {
+          "name": "5.9 Provision User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 or 201', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Has message and user_id', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "  pm.expect(body).to.have.property('user_id');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman-test@klas.id\",\n  \"password\": \"postman123\",\n  \"name\": \"Postman Test User\",\n  \"role\": \"mahasiswa\",\n  \"identifier\": \"POSTMAN001\",\n  \"prodi_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/provision-user",
+              "host": ["{{base_url}}"],
+              "path": ["provision-user"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Check-in & QR",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{mahasiswa_token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "6.1 Check-in — Missing Auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Has error', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_token\": \"fake-token\",\n  \"latitude\": -6.200000,\n  \"longitude\": 106.816666\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/check-in",
+              "host": ["{{base_url}}"],
+              "path": ["check-in"]
+            },
+            "auth": { "type": "noauth" }
+          }
+        },
+        {
+          "name": "6.2 Check-in — Invalid QR Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has error about invalid QR', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_token\": \"invalid-token-abc123\",\n  \"latitude\": -6.200000,\n  \"longitude\": 106.816666\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/check-in",
+              "host": ["{{base_url}}"],
+              "path": ["check-in"]
+            }
+          }
+        },
+        {
+          "name": "6.3 Check-in — Missing Fields (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has validation error', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_token\": \"some-token\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/check-in",
+              "host": ["{{base_url}}"],
+              "path": ["check-in"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Error & Edge Cases",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{admin_token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "7.1 Unauthorized — No Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Has error', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/get-admin-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["get-admin-dashboard"]
+            },
+            "auth": { "type": "noauth" }
+          }
+        },
+        {
+          "name": "7.2 Unauthorized — Expired/Bad Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/get-admin-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["get-admin-dashboard"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZGtleSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNTE2MjM5MDIyfQ.fakeinvalidtoken",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.3 Forbidden — Mahasiswa calls Admin Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Has forbidden error', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"action\": \"list\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/crud-mahasiswa",
+              "host": ["{{base_url}}"],
+              "path": ["crud-mahasiswa"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mahasiswa_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.4 Forbidden — Dosen calls Admin Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/get-admin-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["get-admin-dashboard"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{dosen_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.5 Malformed JSON Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ invalid json here }"
+            },
+            "url": {
+              "raw": "{{base_url}}/get-admin-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["get-admin-dashboard"]
+            }
+          }
+        },
+        {
+          "name": "7.6 Missing Required Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has validation error', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/open-session",
+              "host": ["{{base_url}}"],
+              "path": ["open-session"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{dosen_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.7 SQL Injection Attempt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 401', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "});",
+                  "pm.test('No SQL error in response', () => {",
+                  "  const body = pm.response.text();",
+                  "  pm.expect(body).to.not.include('syntax error');",
+                  "  pm.expect(body).to.not.include('SQL');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"' OR 1=1 --\",\n  \"password\": \"' OR 1=1 --\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "7.8 XSS Payload in Identifier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 401', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "});",
+                  "pm.test('Response is JSON (not HTML)', () => {",
+                  "  pm.response.to.have.header('Content-Type', 'application/json');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"<script>alert('xss')</script>\",\n  \"password\": \"test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "7.9 Oversized Payload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 413', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 413]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "apikey", "value": "{{anon_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"password\": \"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

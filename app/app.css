@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Custom Design System Brand Colors */
+  --color-brand-primary: #00113a;
+  --color-brand-secondary: #002366;
+  --color-brand-logo: #032262;
+  --color-brand-bg: #fbf8fc;
+  --color-brand-surface: #f0edf1;   /* light card/panel surface */
+  --color-brand-canvas: #f8f9ff;    /* admin/dosen page canvas */
+  --color-brand-border: #c5c6d2;
+
+  /* Custom Text Colors */
+  --color-brand-text: #00113a;
+  --color-brand-text-muted: #444650;
+  --color-brand-text-dim: #5d5f5f;
+
+  /* Status Colors */
+  --color-status-success: #22c55e;
+  --color-status-error: #ba1a1a;
+
+  /* Toast Animations */
+  --animate-toast-slide-in: toast-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes toast-slide-in {
+    from {
+      transform: translateY(1.5rem) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+html,
+body {
+  @apply bg-white;
+}
+
+/* Custom modern scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(197, 198, 210, 0.6);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(93, 95, 95, 0.6);
+}
+
+/* Utility to hide number input spinners */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner {
+  -moz-appearance: textfield;
+}

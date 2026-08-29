@@ -1,0 +1,13 @@
+.DS_Store
+.env
+/node_modules/
+
+dev-*.log
+
+# React Router
+/.react-router/
+/build/
+
+cloudflared.exe
+docs/laporan/
+supabase/scripts/create-auth-users.ps1
