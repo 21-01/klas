@@ -495,11 +495,11 @@ export default function DosenAttendance() {
                 )}>
                   <div className="flex items-center gap-[16px] min-w-0">
                     <div className="size-[40px] rounded-[10px] bg-white border border-brand-border flex items-center justify-center font-bold text-brand-primary text-[14px] shrink-0">
-                      {student.mahasiswa.nama.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                      {(student.mahasiswa ?? student).nama.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="font-bold text-[14px] text-brand-primary truncate">{student.mahasiswa.nama}</span>
-                      <span className="text-[11px] text-brand-text-dim">NIM: {student.mahasiswa.nim}</span>
+                      <span className="font-bold text-[14px] text-brand-primary truncate">{(student.mahasiswa ?? student).nama}</span>
+                      <span className="text-[11px] text-brand-text-dim">NIM: {(student.mahasiswa ?? student).nim}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-[12px] shrink-0">
