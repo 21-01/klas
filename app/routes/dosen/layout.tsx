@@ -4,7 +4,6 @@ import ClickAwayListener from "~/components/ClickAwayListener";
 import { Bell, Settings, LogOut, AlertCircle, CheckCircle, BellDot } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { api, clearProfileCache } from "~/lib/api";
-import { supabase } from "~/lib/supabase";
 
 type NotifItem = {
   notifikasi_id: string;

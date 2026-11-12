@@ -1,5 +1,4 @@
-import { supabase } from "./supabase";
-import { FunctionsHttpError } from "@supabase/supabase-js";
+import { getAccessToken } from "./auth";
 
 // ─── Profile Cache ─────────────────────────────────────
 let profileCache: { data: any; expiry: number } | null = null;
@@ -40,28 +39,23 @@ import type {
 } from "./types";
 
 async function invoke<T>(fn: string, body?: unknown): Promise<T> {
-  const { data, error } = await supabase.functions.invoke(fn, {
-    body: body ?? undefined,
+  const token = await getAccessToken();
+  const res = await fetch(`${import.meta.env.VITE_NEON_API_URL}/${fn}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
-  if (error) {
-    let customError: string | null = null;
-    if (error instanceof FunctionsHttpError) {
-      try {
-        const bodyResponse = await error.context.json();
-        if (bodyResponse) {
-          if (typeof bodyResponse.error === "string") {
-            customError = bodyResponse.error;
-          } else if (typeof bodyResponse.message === "string") {
-            customError = bodyResponse.message;
-          }
-        }
-      } catch { /* ignore */ }
-    }
-    if (customError) {
-      throw new Error(customError);
-    }
-    throw new Error(error.message);
+  const text = await res.text();
+  let data: any;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
   }
+  if (!res.ok) throw new Error(data?.error || data?.message || `Request failed (${res.status})`);
   if (data?.error) throw new Error(data.error);
   return data as T;
 }
@@ -172,31 +166,26 @@ export const api = {
     return invoke<DosenReportData>("get-dosen-report", { jadwal_id });
   },
   async exportReport(jadwal_id: string, format: "csv" | "json" = "csv"): Promise<string> {
-    const { data, error } = await supabase.functions.invoke("export-report", {
-      body: { jadwal_id, format },
+    const token = await getAccessToken();
+    const res = await fetch(`${import.meta.env.VITE_NEON_API_URL}/export-report`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ jadwal_id, format }),
     });
-    if (error) {
-      let customError: string | null = null;
-      if (error instanceof FunctionsHttpError) {
-        try {
-          const bodyResponse = await error.context.json();
-          if (bodyResponse) {
-            if (typeof bodyResponse.error === "string") {
-              customError = bodyResponse.error;
-            } else if (typeof bodyResponse.message === "string") {
-              customError = bodyResponse.message;
-            }
-          }
-        } catch { /* ignore */ }
+    const text = await res.text();
+    if (!res.ok) {
+      let data: any = null;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        /* raw text body */
       }
-      if (customError) {
-        throw new Error(customError);
-      }
-      throw new Error(error.message);
+      throw new Error(data?.error || data?.message || `Request failed (${res.status})`);
     }
-    if (typeof data === "string") return data;
-    if (data?.error) throw new Error(data.error);
-    return data as string;
+    return text;
   },
 
   // ─── Admin: CRUD Mahasiswa ──────────────────────────

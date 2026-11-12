@@ -2,7 +2,7 @@ import { useLoaderData } from "react-router";
 import { Award } from "lucide-react";
 import TopAppBar from "~/components/TopAppBar";
 import { api, clearProfileCache } from "~/lib/api";
-import { supabase } from "~/lib/supabase";
+import { getCurrentUser, signOut } from "~/lib/auth";
 import type { Route } from "./+types/profile";
 
 export function meta() {
@@ -12,8 +12,9 @@ export function meta() {
 }
 
 export async function clientLoader({}: Route.ClientLoaderArgs) {
+  const user = await getCurrentUser();
   const profile = await api.getMyProfile();
-  if (profile.role !== "mahasiswa") {
+  if (!user || profile.role !== "mahasiswa") {
     throw new Response("Unauthorized", { status: 403 });
   }
   const initials = profile.nama.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
@@ -80,7 +81,7 @@ export default function Profile() {
         </div>
 
         <button
-          onClick={() => { clearProfileCache(); localStorage.clear(); window.location.href = "/login"; }}
+          onClick={async () => { clearProfileCache(); localStorage.clear(); await signOut(); window.location.href = "/login"; }}
           className="bg-white border border-status-error hover:bg-red-50 text-status-error active:scale-[0.98] transition-all font-semibold text-[12px] tracking-[1.2px] uppercase py-[14px] w-full rounded mt-4 cursor-pointer text-center"
         >
           Sign Out

@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { ArrowLeft, Save, Loader2, Eye, EyeOff } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { api, clearProfileCache } from "~/lib/api";
-import { supabase } from "~/lib/supabase";
+import { changePassword, signOut } from "~/lib/auth";
 import { useToast } from "~/components/Toast";
 
 export function meta() {
@@ -67,7 +67,7 @@ export default function AccountSettings() {
     }
     setSavingPassword(true);
     try {
-      await api.changePassword(currentPassword, newPassword);
+      await changePassword(currentPassword, newPassword);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -79,8 +79,9 @@ export default function AccountSettings() {
     }
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     localStorage.clear();
+    await signOut();
     window.location.href = "/login";
   };
 

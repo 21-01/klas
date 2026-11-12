@@ -11,3 +11,5 @@ dev-*.log
 cloudflared.exe
 docs/laporan/
 supabase/scripts/create-auth-users.ps1
+.neon
+.env.local

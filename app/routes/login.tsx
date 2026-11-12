@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { User, Lock, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { supabase } from "~/lib/supabase";
+import { signIn } from "~/lib/auth";
+import { api, clearProfileCache } from "~/lib/api";
 
 export function meta() {
   return [
@@ -35,74 +36,24 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      let resolvedEmail = campusId.trim();
+      const emailOrCampusId = campusId.trim();
 
-      // Check if it's a numeric NIM (Student ID) or NIP (Lecturer ID)
-      const isNumeric = /^\d+$/.test(resolvedEmail);
-      if (isNumeric) {
-        // Query to find if it matches a Student NIM
-        const { data: studentData } = await supabase
-          .from("mahasiswa")
-          .select("users(email)")
-          .eq("nim", resolvedEmail)
-          .maybeSingle();
+      // Neon Auth signs in by email. A NIM/NIP is passed through as-is for now;
+      // campus IDs are not resolved to an email client-side anymore.
+      await signIn(emailOrCampusId, password);
 
-        if (studentData?.users && typeof studentData.users === "object" && "email" in studentData.users) {
-          resolvedEmail = (studentData.users as any).email;
-        } else {
-          // If not a student, check if it matches a Lecturer NIP
-          const { data: lecturerData } = await supabase
-            .from("dosen")
-            .select("users(email)")
-            .eq("nip", resolvedEmail)
-            .maybeSingle();
+      clearProfileCache();
+      const profile = await api.getMyProfile();
 
-          if (lecturerData?.users && typeof lecturerData.users === "object" && "email" in lecturerData.users) {
-            resolvedEmail = (lecturerData.users as any).email;
-          } else {
-            setIsLoading(false);
-            setError("No student (NIM) or lecturer (NIP) matches this ID.");
-            return;
-          }
-        }
-      }
+      setIsLoading(false);
 
-      // Perform real Supabase authentication
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: resolvedEmail,
-        password: password,
-      });
-
-      if (authError) {
-        setIsLoading(false);
-        setError(authError.message);
-        return;
-      }
-
-      if (authData.user) {
-        // Fetch the user's role and profile via RPC (bypasses RLS)
-        const { data: userProfile, error: profileError } = await supabase
-          .rpc("get_current_user_profile")
-          .maybeSingle();
-
-        if (profileError || !userProfile) {
-          setIsLoading(false);
-          setError(`Failed to fetch user profile data. ${profileError?.message || "User not found"}`);
-          return;
-        }
-
-        const profile = userProfile as any;
-
-        setIsLoading(false);
-
-        // Redirect based on role
-        if (profile.role === "mahasiswa") {
-          navigate("/mahasiswa");
-        } else if (profile.role === "dosen") {
-          navigate("/dosen");
-        } else if (profile.role === "admin" || profile.role === "super_admin" || profile.role === "admin_prodi") {
-          navigate("/admin");
-        }
+      // Redirect based on role
+      if (profile.role === "mahasiswa") {
+        navigate("/mahasiswa");
+      } else if (profile.role === "dosen") {
+        navigate("/dosen");
+      } else if (profile.role === "admin" || profile.role === "super_admin" || profile.role === "admin_prodi") {
+        navigate("/admin");
       }
     } catch (err: any) {
       setIsLoading(false);
