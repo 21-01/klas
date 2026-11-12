@@ -1,13 +1,13 @@
 # Klas. Database Schema
 
-This document outlines the authoritative database schema as defined in the `supabase/migrations/` directory.
+This document outlines the authoritative database schema as defined in the `supabase/migrations/` directory. Those files remain the canonical schema on Neon; `neon/sql/001_functions.sql` adds the role vocabulary and SQL helpers the API calls.
 
 ---
 
 ## 1. Core Entities (`001_core.sql`)
 
 ### `users`
-User profiles linked to Supabase Auth UID.
+User profiles linked to the Neon Auth user id.
 * **`user_id`**: UUID (PK) - Default `uuid_generate_v4()`
 * **`email`**: VARCHAR(255) UNIQUE
 * **`name`**: VARCHAR(150)

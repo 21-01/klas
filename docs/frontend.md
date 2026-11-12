@@ -32,7 +32,7 @@ Accessible at `/mahasiswa` after login. The Mahasiswa pages are wrapped in a pho
 3. **[QR Scanner Page](file:///d:/Computer%20Science/Semester%204/Rekayasa%20Perangkat%20Lunak/klas-frontend/app/routes/scanner.tsx)**
    - Camera-based QR code scanner using `@yudiel/react-qr-scanner`.
    - Requests GPS coordinates via Browser Geolocation API.
-   - Calls the `check-in` edge function with the scanned QR token and GPS location.
+   - Calls the `check-in` API endpoint with the scanned QR token and GPS location.
    - Displays success (CheckCircle + bounce animation) or error state, then auto-redirects to dashboard.
 4. **[Class Logs](file:///d:/Computer%20Science/Semester%204/Rekayasa%20Perangkat%20Lunak/klas-frontend/app/routes/logs.tsx)**
    - Displays cumulative attendance stats (94% Present) alongside a tabular listing of historical checks.
@@ -49,7 +49,7 @@ The Dosen pages target a large desktop viewport (1280px container layout) with c
 1. **[Desktop Header Layout Shell](file:///d:/Computer%20Science/Semester%204/Rekayasa%20Perangkat%20Lunak/klas-frontend/app/routes/dosen/layout.tsx)**
    - Persistent top navigation navbar with badge elements (`LECTURER`) and active route tracking.
    - Navigation links: **Dashboard**, **Attendance**, **Report**, **Account Settings**.
-   - **Notifications dropdown** with real-time alerts (geofence violations, session closures) via Supabase Realtime.
+   - **Notifications dropdown** with real-time alerts (geofence violations, session closures) via Neon Realtime.
    - **Profile dropdown** with avatar, name, NIDN, Account Settings link, and Sign Out.
 2. **[Class Session Management / Dashboard](file:///d:/Computer%20Science/Semester%204/Rekayasa%20Perangkat%20Lunak/klas-frontend/app/routes/dosen/dashboard.tsx)**
    - Displays course schedule cards fetched from `get-dosen-dashboard` API.
@@ -60,7 +60,7 @@ The Dosen pages target a large desktop viewport (1280px container layout) with c
 4. **[Real-Time QR Monitor](file:///d:/Computer%20Science/Semester%204/Rekayasa%20Perangkat%20Lunak/klas-frontend/app/routes/dosen/attendance.tsx)**
    - Displays rotating QR code (via `react-qr-code`) with batch-generated tokens.
    - Session settings accordion: geofence radius slider (10m–500m) and QR rotation interval slider (5s–60s).
-   - Real-time check-in feed via Supabase Realtime subscription on `presensi` table.
+   - Real-time check-in feed via Neon Realtime subscription on `presensi` table.
    - Session timer, attendance counts (present/absent), and recent check-in activity.
 5. **[Session History](file:///d:/Computer%20Science/Semester%204/Rekayasa%20Perangkat%20Lunak/klas-frontend/app/routes/dosen/sessions.tsx)**
    - Paginated list of past sessions with attendance stats.

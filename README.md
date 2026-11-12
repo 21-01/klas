@@ -27,34 +27,39 @@ The system leverages:
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 19 + React Router v8 + Vite 8 + Tailwind v4
-- **Backend**: Supabase (PostgreSQL + PostGIS + Edge Functions + Realtime)
+- **Backend**: Neon (PostgreSQL + PostGIS + Functions + Auth + Realtime + Object Storage)
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-klas-frontend/
+klas/
 ├── app/
 │   ├── lib/                  # Shared utilities
-│   │   ├── api.ts            # Frontend API client
-│   │   ├── realtime.ts       # Supabase Realtime hooks
-│   │   ├── supabase.ts       # Supabase client configuration
+│   │   ├── api.ts            # Frontend API client (Neon Function calls)
+│   │   ├── auth.ts           # Neon Auth client + JWT bearer helper
+│   │   ├── realtime.ts       # Neon Realtime live-query hooks
 │   │   ├── types.ts          # TypeScript type definitions
-│   │   └── utils.ts           # Shared utilities
+│   │   └── utils.ts          # Shared utilities
 │   ├── routes/               # Application routing by role
 │   │   ├── admin/            # Administrative management portals
 │   │   ├── dosen/            # Lecturer controls & real-time analytics
-│   │   └── mahasiswa/         # Student interface
+│   │   └── mahasiswa/        # Student interface
 │   └── root.tsx              # React entrypoint
-├── supabase/
-│   ├── config.toml           # Local configuration
-│   ├── functions/            # Edge Functions (37 total)
-│   │   ├── _shared          # Shared utilities
-│   │   ├── [function-name]   # Function implementations
-│   ├── migrations/           # Database schema migrations
-│   ├── scripts/              # Auth user provisioning script
-│   └── seed.sql              # Initial data seed
+├── neon-api/                 # Neon Function `api` — Hono app
+│   ├── index.ts              # Route mounts, CORS, error envelope
+│   ├── cron.ts               # Scheduled maintenance handler
+│   ├── CONTRACT.md           # Endpoint contract
+│   ├── lib/                  # env, db, auth, qr, geo, audit, storage
+│   └── routes/               # auth, attendance, dosen, admin, realtime
+├── neon/
+│   └── sql/001_functions.sql # Schema reconciliation + SQL helpers
+├── neon.ts                   # Neon IaC: auth, functions, buckets, realtime, triggers
+├── supabase/                 # Canonical SQL migrations (schema source)
+│   ├── migrations/           # 001..004 schema, 006..009 Supabase-only extras
+│   └── seed.sql              # Non-auth seed data
+├── scripts/                  # db runner, auth users, seed, smoke test
 ├── public/                   # Static assets (including logo.svg)
 ├── tests/                    # Test suite
 ├── docs/                     # Project documentation
@@ -68,7 +73,8 @@ klas-frontend/
 ### Prerequisites
 
 - Node.js 20+ installed on your machine
-- Supabase CLI installed (`pnpm exec supabase --version`)
+- pnpm (the project uses `pnpm-lock.yaml`)
+- A Neon project linked locally (`.neon`); `npx neon env pull .env.local` writes the branch secrets
 
 ### Core Frontend Commands
 
@@ -82,96 +88,60 @@ klas-frontend/
 | `pnpm test`        | Run Vitest test suite                                 |
 | `pnpm test:watch`  | Run Vitest in watch mode                              |
 
-### Supabase Local Development
+### Neon Backend
 
 ```bash
-# Start local Supabase emulator stack (ports: 54321 API, 54322 DB, 54323 Studio)
-supabase start
+# Apply schema + SQL helpers, create Neon Auth users, seed demo data
+pnpm db:setup
 
-# Stop local stack
-supabase stop
+# Bundle + deploy the api and cron functions and apply triggers
+pnpm neon:deploy
 
-# Reset database (migrations + seed)
-supabase db reset
-
-# Run Edge Functions locally for testing
-supabase functions serve
-
-# Deploy function changes
-supabase functions deploy <function-name>
-
-# Push migrations to remote database
-supabase db push
-
-# Pull remote changes to local
-supabase db pull
+# End-to-end checks against the deployed function
+pnpm smoke
 ```
+
+`npx neon config plan --env .env.local` shows what a deploy would change;
+`npx neon dev` serves the Hono app locally with the branch's env injected.
 
 ### Database
 
-- Schema: `supabase/migrations/`
-- Seed data: `supabase/seed.sql`
-- Auth users: `supabase/scripts/create-auth-users.ps1 -Local`
+- Schema: `supabase/migrations/001..004` (canonical) plus `neon/sql/001_functions.sql`
+- Seed data: `supabase/seed.sql` and `scripts/seed.mjs`
+- Auth users: `scripts/auth-users.mjs` (Neon Auth Admin API)
 
 ---
 
-## 🔒 Edge Functions Architecture
+## 🔒 Backend Architecture
 
 ### Authentication
 
-- Custom auth: `login` edge function handles login, returns `{session: {access_token, refresh_token}, user}`
-- Session tokens managed client-side (not via `supabase-js signIn`)
+- Sign-in, session refresh and password changes use Neon Auth (`@neon/auth`, Managed Better Auth).
+- The browser sends the 15-minute EdDSA JWT as `Authorization: Bearer <JWT>`; the Function verifies it against the branch JWKS and loads the profile from `public.users`.
+- `POST /refresh-session` accepts the signed session cookie in the body or the `Cookie` header and rejects a cookie that does not match the refresh token.
 
 ### Security Model
 
-- **All HTTP operations** flow through Supabase Edge Functions
-- **JWT verification**: Most functions have `verify_jwt = true`, only `login`, `refresh-session`, `get-notifications` have `verify_jwt = false`
-- **RLS** enforced on `presensi`, `jadwal_kelas`, `parameter_keamanan` tables
+- **All HTTP operations** flow through one Neon Function (`api`), a Hono app in `neon-api/`.
+- Paths keep the old edge-function names (`POST <VITE_NEON_API_URL>/<name>`), so `app/lib/api.ts` is unchanged.
+- **No RLS**: role checks live in `neon-api/lib/auth.ts` and each route.
+- Errors keep the old envelope: `{ "error": "<message>" }`.
 
-### Core Functions
+### Endpoints
 
-The application uses **37 Edge Functions** for all business logic:
+`neon-api/CONTRACT.md` is the source of truth. It covers the 37 former edge functions plus `/realtime/config`, `/realtime/presensi`, `/realtime/sesi` and `/realtime/notifikasi`:
 
-#### Check-in & Session Management
+- **Auth**: `login`, `refresh-session`, `change-password`, `provision-user`
+- **Check-in & sessions**: `check-in`, `generate-qr-token`, `open-session`, `close-session`, `reopen-session`, `update-session`, `update-session-settings`, `delete-session`, `list-sessions`, `get-live-session`
+- **Attendance**: `correct-attendance`, `bulk-mark-present`, `get-course-students`
+- **Profiles & dashboards**: `get-my-profile`, `get-my-dashboard`, `get-my-logs`, `get-dosen-profile`, `update-dosen-profile`, `get-dosen-dashboard`, `get-admin-dashboard`
+- **Reporting**: `get-dosen-report`, `export-report`, `get-attendance-stats`, `get-global-attendance`, `get-admin-attendance-courses`
+- **Admin CRUD**: `crud-mahasiswa`, `crud-dosen`, `crud-mata-kuliah`, `crud-jadwal`, `crud-ruangan`, `crud-prodi`
+- **Support**: `get-notifications`, `get-audit-logs`
 
-- `check-in`: Verifies student location, QR token, and network
-- `generate-qr-token`: Creates 15-second QR codes for lecturers
-- `open-session`, `close-session`, `refresh-session`, `reopen-session`: Session lifecycle
-- `get-live-session`, `update-session`, `update-session-settings`, `delete-session`, `list-sessions`
+### Scheduled Jobs
 
-#### Attendance Operations
-
-- `correct-attendance`: Admin corrections with audit trail
-- `bulk-mark-present`: Bulk student status updates
-
-#### User Management
-
-- `get-my-profile`, `get-my-dashboard`, `get-my-logs`: Student self-service
-- `get-dosen-profile`, `update-dosen-profile`: Lecturer profile management
-
-#### Role-Based Features
-
-- `get-dosen-dashboard`: Lecturer analytics dashboard
-- `get-admin-dashboard`: Administrator overview
-- `get-global-attendance`: System-wide attendance monitoring
-- `get-attendance-stats`: Analytics and reporting
-
-#### CRUD Operations
-
-- `crud-mahasiswa`, `crud-dosen`, `crud-mata-kuliah`, `crud-jadwal`, `crud-ruangan`, `crud-prodi`: Administrative data management
-
-#### Reporting & Export
-
-- `get-dosen-report`, `export-report`: Lecturer reports
-- `get-admin-attendance-courses`: Course enrollment analytics
-
-#### Support Functions
-
-- `get-course-students`: View class rosters
-- `provision-user`: Admin user account creation
-- `get-notifications`: Real-time notification system
-- `get-audit-logs`: Security audit trail
-- `change-password`: User password updates
+`neon-api/cron.ts` runs `auto_close_stale_sessions()` and `cleanup_expired_qr_codes()` (see `neon/sql/001_functions.sql`). The `klas-maintenance` trigger in `neon.ts` invokes it every 5 minutes (UTC); calls without Neon's `X-Neon-Trigger-Invocation-Id` header are rejected.
 
 ---
 
@@ -184,7 +154,7 @@ Tests use:
 - **Framework**: Vitest with `happy-dom` environment
 - **Setup**: `tests/setup.ts` imports `@testing-library/jest-dom/vitest`
 - **Helpers**: `tests/helpers.tsx` provides `renderWithRouter()` for route-aware rendering
-- **Mocking**: Mock `app/lib/api.ts` for edge function calls and `app/components/Toast` for notifications
+- **Mocking**: Mock `app/lib/api.ts` for Function calls, `app/lib/auth.ts` for sign-in, and `app/components/Toast` for notifications
 
 ### Running Tests
 
@@ -207,7 +177,7 @@ pnpm test:watch
 
 ## ⚡ Realtime Features
 
-The application uses Supabase Realtime WebSocket subscriptions:
+The application uses Neon Realtime sealed live queries over WebSockets:
 
 - `useRealtimePresensi`: Attendance updates in real-time
 - `useRealtimeSession`: Session status changes
@@ -220,13 +190,21 @@ The application uses Supabase Realtime WebSocket subscriptions:
 
 ### Environment Variables
 
-Create `.env` file with:
+Create `.env.local` (gitignored) from `npx neon env pull .env.local`, then set the browser-facing values:
 
 ```bash
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+VITE_NEON_AUTH_URL=https://<endpoint>.neonauth.<cell>.<region>.aws.neon.tech/neondb/auth
+VITE_NEON_API_URL=https://<branch-id>-api.compute.<cell>.<region>.aws.neon.tech
+VITE_NEON_REALTIME_URL=wss://<realtime-endpoint>
+
+# Function secrets declared in neon.ts
+QR_SECRET=change-me-at-least-32-characters-long
+KLAS_CORS_ORIGINS=https://klas.unj.ac.id,http://localhost:5173
+KLAS_REPORT_BUCKET=assets
 ```
+
+See `.env.example` for the full list, including the server-side `DATABASE_URL`,
+`NEON_AUTH_*`, `NEON_REALTIME_*` and `AWS_*` variables.
 
 ### Vite Configuration
 
@@ -251,8 +229,8 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - **React Router**: https://reactrouter.com/
 - **Vite**: https://vite.dev/
 - **Tailwind CSS**: https://tailwindcss.com/
-- **Supabase**: https://supabase.com/
+- **Neon**: https://neon.com/docs/
 
 ---
 
-_Last updated: $(date +%Y-%m-%d)_
+_Last updated: 2026-11-13_

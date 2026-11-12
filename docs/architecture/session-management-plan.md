@@ -6,7 +6,7 @@ Add ability for dosen to view, edit (reopen + settings), and delete past class s
 
 ---
 
-## Phase 1: Backend — New Edge Functions
+## Phase 1: Backend — New API Endpoints
 
 ### 1a. `list-sessions`
 
@@ -57,7 +57,7 @@ UpdateSessionRequest { sesi_id, tanggal?, geofence_radius_m?, qr_rotates_every? 
 
 ### 2b. New API Methods (`app/lib/api.ts`)
 
-| Method | Edge Function |
+| Method | API endpoint |
 |---|---|
 | `api.listSessions(jadwal_id, page?, limit?)` | `list-sessions` |
 | `api.deleteSession(sesi_id)` | `delete-session` |
@@ -113,10 +113,7 @@ UpdateSessionRequest { sesi_id, tanggal?, geofence_radius_m?, qr_rotates_every? 
 
 | File | Action |
 |---|---|
-| `supabase/functions/list-sessions/index.ts` | CREATE |
-| `supabase/functions/delete-session/index.ts` | CREATE |
-| `supabase/functions/reopen-session/index.ts` | CREATE |
-| `supabase/functions/update-session/index.ts` | CREATE |
+| `neon-api/routes/dosen.ts` (add handlers) | MODIFY |
 | `app/lib/types.ts` | MODIFY |
 | `app/lib/api.ts` | MODIFY |
 | `app/routes.ts` | MODIFY |

@@ -1,6 +1,6 @@
 # Klas. Backend Architecture Documentation
 
-This document outlines the structure and design of the **Klas.** backend, which is built on top of [Supabase](https://supabase.com). It leverages PostgreSQL, Row Level Security (RLS), Edge Functions, and pg_cron for scheduled tasks.
+This document outlines the structure and design of the **Klas.** backend, which runs on [Neon](https://neon.com). It uses PostgreSQL + PostGIS for data, Neon Auth (Managed Better Auth) for identity, a single Neon Function for the API, Neon Realtime for live updates, and a scheduled Function Trigger for background jobs. See `docs/architecture/neon.md` for the migration map.
 
 ## 1. Database Schema & Migrations
 The database schema is defined in a series of sequential SQL migrations located in `supabase/migrations/`.
@@ -33,28 +33,26 @@ The database schema is defined in a series of sequential SQL migrations located 
 * **`ip_whitelist`**: Campus network CIDR subnets for IP filtering.
 * **`failed_login_attempts`**: Brute-force protection tracking with `ip_address`, `email`, and `attempted_at`.
 
-### `006_rls.sql` (Row Level Security)
-Enforces security at the database tier via helper functions `user_role()`, `is_role()`, and `has_role()`. Policies use JWT `role` claim to control access:
+### `006_rls.sql` (Row Level Security) — not applied on Neon
+This migration exists in the canonical schema but is **not** applied: the API connects with the database owner role and authorization lives in `neon-api/lib/auth.ts`. It defines helper functions `user_role()`, `is_role()`, and `has_role()` plus the policy intent:
 * Students can see their own profiles, enrolled schedules, and attendance.
 * Lecturers can see data for classes they teach and manage attendance sessions.
 * Admins have elevated access based on role (admin_prodi can read/write most tables; super_admin in `role_permissions` controls RBAC).
 * Audit logs and IP whitelist are restricted to admin roles.
 
-### `007_realtime.sql` (Realtime & Triggers)
-* Adds `presensi`, `sesi_kehadiran`, and `notifikasi` tables to the `supabase_realtime` publication for WebSocket subscriptions.
-* Defines `notify_geofence_violation()` trigger to automatically create in-app notifications for lecturers if a student checks in outside the physical geofence boundary.
-* Provides `realtime_channel()` helper function for consistent channel name generation.
+### `007_realtime.sql` (Realtime & Triggers) — not applied on Neon
+Supabase-specific publication setup. On Neon, live queries are served by `@neon/realtime` (see `neon-api/routes/realtime.ts`), and geofence notifications are created by the API instead of a database trigger.
 
-### `008_scheduled_tasks.sql` (Background Jobs)
-Utilizes the `pg_cron` extension for automated database tasks:
-* **Auto-close Stale Sessions** (`*/5 * * * *`): Automatically closes live sessions past their scheduled end time (`tanggal + waktu_selesai < now()`), with audit logging.
-* **Cleanup Expired QR Codes** (`*/30 * * * * *`): Deletes expired QR tokens from the `qr_code` table every 30 seconds.
-* **Daily Attendance Digest** (`0 23 * * *`): Runs daily at 23:00 to notify students whose attendance drops below 75%, and sends aggregate alerts to admins.
+### `008_scheduled_tasks.sql` (Background Jobs) — not applied on Neon
+The Supabase version used `pg_cron`. On Neon, `neon-api/cron.ts` runs the query helpers in `neon/sql/001_functions.sql` on the `klas-maintenance` Function Trigger:
+* **Auto-close stale sessions** (`*/5 * * * *`): closes `live` sessions older than 4 hours.
+* **Cleanup expired QR codes** (same invocation): deletes expired `qr_code` rows.
+* The daily attendance digest from the Supabase migration is not ported; it can be added to `cron.ts` when needed.
 
 ---
 
-## 2. Edge Functions (API)
-All business logic, external API integrations, and secure operations are handled via Supabase Edge Functions in `supabase/functions/`. They are invoked from the frontend using `supabase.functions.invoke()`.
+## 2. Neon Function API
+All business logic, external API integrations, and secure operations are handled by one Neon Function, `api` (`neon-api/`), a Hono app. The browser calls it as `POST <VITE_NEON_API_URL>/<endpoint>` with a bearer JWT; the paths keep the former edge-function names. See `neon-api/CONTRACT.md` for the request/response contract.
 
 ### Auth & User Management
 * **`login`**: Authenticates users and returns JWTs.
@@ -75,7 +73,7 @@ All business logic, external API integrations, and secure operations are handled
 ### Dosen (Lecturer) Operations
 * **`get-dosen-dashboard`**: Fetches the lecturer's schedule and currently active sessions.
 * **`get-dosen-profile`**: Fetches the lecturer's profile information.
-* **`update-dosen-profile`**: Updates the lecturer's profile (name, gender). Syncs to Supabase Auth metadata.
+* **`update-dosen-profile`**: Updates the lecturer's profile (name, gender).
 * **`open-session`**: Initializes a live classroom session and generates the initial QR seed.
 * **`close-session`**: Ends a live session.
 * **`update-session-settings`**: Modifies the geofence radius or QR rotation interval for an active session.

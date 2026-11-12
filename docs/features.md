@@ -14,7 +14,7 @@
 - Loading spinner on submit
 - Error banner for validation/auth errors
 - **NIM/NIP resolution**: auto-lookup numeric IDs against `mahasiswa`/`dosen` tables to resolve email
-- **Supabase authentication** via `signInWithPassword`
+- **Neon Auth** via `signInWithPassword`
 - Role-based redirect: `mahasiswa` → `/mahasiswa`, `dosen` → `/dosen`, `admin` → `/admin`
 - Stores `userRole`, `userCampusId`, `userName`, `userEmail` in `localStorage`
 - **Quick test account presets**: Student, Lecturer, Admin (pre-fill credentials)
@@ -44,7 +44,7 @@
 - **TopAppBar** component
 - Camera-based QR code scanner using `@yudiel/react-qr-scanner`
 - Requests GPS coordinates via Browser Geolocation API
-- Calls `check-in` edge function with QR token + GPS coordinates
+- Calls `check-in` API endpoint with QR token + GPS coordinates
 - Success animation (CheckCircle + bounce) + auto-redirect to dashboard (2s)
 - Error state display for failed check-ins (expired QR, out of geofence, etc.)
 - **GPS Status** indicator (pulsing green dot, "Verified")
@@ -100,10 +100,10 @@
     - **QR Rotates Every** slider (5s–60s)
     - Save Settings button
   - **Right**: Attendance quota banner (present/pending count + %)
-  - **Right**: Live Activity Log feed via Supabase Realtime subscription
-- **Batch QR token generation**: Generates a 2-minute batch of tokens in a single edge function call, reducing network calls by ~91.5%.
+  - **Right**: Live Activity Log feed via Neon Realtime subscription
+- **Batch QR token generation**: Generates a 2-minute batch of tokens in a single API call, reducing network calls by ~91.5%.
 - QR token queue with `useRef` for stale-closure-free rotation
-- Real-time present count updates via Supabase Realtime
+- Real-time present count updates via Neon Realtime
 
 ### 4.4 Session History (`/dosen/attendance/:jadwal_id/sessions` — `routes/dosen/sessions.tsx`)
 - Paginated list of past sessions fetched from `list-sessions` API

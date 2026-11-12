@@ -11,15 +11,16 @@ functions). It now runs on a single Neon project:
 | Live updates | Supabase Realtime channels | Neon Realtime sealed live queries |
 | Report exports | CSV response body | CSV body + upload to Neon Object Storage (`assets`) |
 | Authorization | RLS policies | explicit checks in `neon-api/lib/auth.ts` |
-| Scheduled jobs | `pg_cron` | not scheduled; helpers exist as SQL functions |
+| Scheduled jobs | `pg_cron` | Neon Function Trigger `klas-maintenance`, every 5 minutes (UTC) |
 
 ## Layout
 
 ```
-neon.ts                 Neon IaC: auth, functions.api, buckets.assets, realtime
+neon.ts                 Neon IaC: auth, functions.api, functions.cron, buckets.assets, realtime, triggers
 neon/sql/001_functions.sql   schema reconciliation + SQL helpers
 neon-api/
   index.ts              Hono app, CORS, error envelope, route mounts
+  cron.ts               scheduled maintenance handler (Function Trigger target)
   CONTRACT.md           endpoint spec (source of truth for the port)
   lib/                  env, db (pg pool), http, auth (JWT + roles), qr, geo, audit, util, storage
   routes/               auth, attendance, dosen, admin, realtime
@@ -55,6 +56,22 @@ Supabase auth schema or realtime publication, and authorization lives in the API
 `neon/sql/001_functions.sql` adds what the API needs on top of that schema:
 extended role vocabulary, `check_and_record_failed_login`,
 `auto_close_stale_sessions`, `cleanup_expired_qr_codes`.
+
+## Scheduled maintenance
+
+The functions that ran under `pg_cron` on Supabase now run as a Neon Function
+Trigger. `neon.ts` declares the `cron` function and the `klas-maintenance`
+trigger (`*/5 * * * *`, UTC); Neon invokes `cron.ts` with a POST whose body
+carries `data.scheduled_at`. The handler rejects calls without the
+`X-Neon-Trigger-Invocation-Id` header, then runs both SQL helpers and returns a
+5xx if either fails so the occurrence is retried.
+
+```bash
+npx neon config plan --env .env.local   # expect "+ function cron" and "+ trigger klas-maintenance"
+npx neon deploy --env .env.local --yes  # deploys api + cron and applies the trigger
+npx neon triggers list                  # shows the schedule and next run
+npx neon logs query --source function --service-name neon-function/cron
+```
 
 ## Local workflow
 

@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "KLAS API Testing",
-    "description": "System Integration Test Collection for KLAS (Kelas Absensi System).\n\nPrerequisites:\n1. Start local Supabase: supabase start\n2. Run seed script: ./supabase/scripts/create-auth-users.ps1 -Local\n3. Import the klas-local environment\n4. Set anon_key in environment\n5. Run 01-Auth folder first to get tokens\n\nAll endpoints use POST method and require Authorization header (auto-set via tests).",
+    "description": "System Integration Test Collection for KLAS (Kelas Absensi System).\n\nPrerequisites:\n1. Apply schema + seed: pnpm db:setup\n2. Deploy the Functions: pnpm neon:deploy\n3. Import the postman environment and set base_url to your deployed api URL\n   (https://<branch-id>-api.compute.<cell>.<region>.aws.neon.tech)\n4. Run the 01-Auth folder first; tokens are stored in environment variables\n\nAll endpoints are POST and use the bearer token set from the login response.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [],
@@ -60,10 +60,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -108,10 +104,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -156,10 +148,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -198,10 +186,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -237,10 +221,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -278,10 +258,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -317,10 +293,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -354,10 +326,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -393,10 +361,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -440,10 +404,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -510,10 +470,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -557,10 +513,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -604,10 +556,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -643,10 +591,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -698,10 +642,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -737,10 +677,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -776,10 +712,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -820,10 +752,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -859,10 +787,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -902,10 +826,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -941,10 +861,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -982,10 +898,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1023,10 +935,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1062,10 +970,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1101,10 +1005,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1141,10 +1041,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1180,10 +1076,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1219,10 +1111,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1258,10 +1146,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "apikey",
-                "value": "{{anon_key}}"
               }
             ],
             "body": {
@@ -1320,8 +1204,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1358,8 +1241,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1391,8 +1273,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1424,8 +1305,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1457,8 +1337,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1497,8 +1376,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1534,8 +1412,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1567,8 +1444,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1600,8 +1476,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1638,8 +1513,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1675,8 +1549,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1708,8 +1581,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1741,8 +1613,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1775,8 +1646,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1812,8 +1682,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1841,8 +1710,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1870,8 +1738,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1904,8 +1771,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1933,8 +1799,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1962,8 +1827,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -1991,8 +1855,7 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json" },
-                  { "key": "apikey", "value": "{{anon_key}}" }
+                  { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                   "mode": "raw",
@@ -2041,8 +1904,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{}" },
             "url": {
@@ -2073,8 +1935,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}" },
             "url": {
@@ -2105,8 +1966,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{\n  \"page\": 1,\n  \"limit\": 20\n}" },
             "url": {
@@ -2138,8 +1998,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{\n  \"page\": 1,\n  \"limit\": 20,\n  \"kategori\": \"Authentication\"\n}" },
             "url": {
@@ -2168,8 +2027,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{\n  \"action\": \"get\"\n}" },
             "url": {
@@ -2198,8 +2056,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2232,8 +2089,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{\n  \"action\": \"get\"\n}" },
             "url": {
@@ -2258,8 +2114,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{\n  \"action\": \"list\"\n}" },
             "url": {
@@ -2291,8 +2146,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2339,8 +2193,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2373,8 +2226,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2406,8 +2258,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2454,8 +2305,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{}" },
             "url": {
@@ -2481,8 +2331,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{}" },
             "url": {
@@ -2521,8 +2370,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{\n  \"action\": \"list\"\n}" },
             "url": {
@@ -2557,8 +2405,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{}" },
             "url": {
@@ -2593,8 +2440,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2626,8 +2472,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": { "mode": "raw", "raw": "{}" },
             "url": {
@@ -2669,8 +2514,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2703,8 +2547,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -2734,8 +2577,7 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "apikey", "value": "{{anon_key}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",

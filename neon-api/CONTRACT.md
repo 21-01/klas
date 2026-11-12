@@ -77,15 +77,18 @@ Body `{ email, password }` (zod). Steps:
 4. On success: `delete from failed_login_attempts where ip_address = $1`.
 5. Load `public.users` by `user_id`; if missing, 403 `"User profile not found"`.
 6. Audit success (`Authentication`).
-7. Return `{ session: { access_token, refresh_token, expires_at }, user: { id, email, name, role } }`
+7. Return `{ session: { access_token, refresh_token, expires_at, cookie? }, user: { id, email, name, role } }`
    where `access_token` is the Better Auth JWT, `refresh_token` the session token,
-   `expires_at` an ISO string ~7 days out.
+   `expires_at` an ISO string ~7 days out, and `cookie` (when available) the signed
+   `__Secure-neon-auth.session_token=...` pair for non-browser refresh.
 
 ### `POST /refresh-session` (public)
-Body `{ refresh_token }`. Better Auth sessions are cookie/DB based; verify the
-session still exists in `neon_auth.session` by `token = $1` and not expired.
+Body `{ refresh_token, cookie? }`; the signed session cookie may also arrive in the
+`Cookie` header. If a cookie is supplied, its session token must equal
+`refresh_token`, otherwise 401 `"Session cookie does not match refresh token"`.
+Verify the session still exists in `neon_auth.session` by `token = $1` and not expired.
 Return `{ session: { access_token: <fresh JWT>, refresh_token, expires_at }, user: {...} }`.
-Mint the JWT by calling `GET {NEON_AUTH_BASE_URL}/token` with `Authorization: Bearer <refresh_token>`
+Mint the JWT by calling `GET {NEON_AUTH_BASE_URL}/token` with the signed cookie
 (fallback: reuse `refresh_token` as access token and log a warning).
 
 ### `POST /change-password`

@@ -1,27 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import React from "react";
 
-const mockSignInWithPassword = vi.fn();
-const mockFrom = vi.fn();
-const mockRpc = vi.fn();
-
-vi.mock("../../app/lib/supabase", () => ({
-  supabase: {
-    auth: {
-      signInWithPassword: (...args: any[]) => mockSignInWithPassword(...args),
-    },
-    from: (...args: any[]) => mockFrom(...args),
-    rpc: (...args: any[]) => mockRpc(...args),
-  },
+const { mockSignIn, mockGetMyProfile, mockNavigate } = vi.hoisted(() => ({
+  mockSignIn: vi.fn(),
+  mockGetMyProfile: vi.fn(),
+  mockNavigate: vi.fn(),
 }));
+
+vi.mock("../../app/lib/auth", () => ({
+  signIn: (...args: unknown[]) => mockSignIn(...args),
+}));
+
+vi.mock("../../app/lib/api", () => ({
+  api: { getMyProfile: (...args: unknown[]) => mockGetMyProfile(...args) },
+  clearProfileCache: vi.fn(),
+}));
+
+vi.mock("react-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-router")>();
+  return { ...actual, useNavigate: () => mockNavigate };
+});
 
 import LoginPage from "../../app/routes/login";
 
 function renderLogin() {
-  const { render } = require("@testing-library/react");
   return render(
     <MemoryRouter initialEntries={["/login"]}>
       <LoginPage />
@@ -32,24 +37,13 @@ function renderLogin() {
 describe("Login Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-        }),
-      }),
-    });
-    mockRpc.mockReturnValue({
-      maybeSingle: vi.fn().mockResolvedValue({
-        data: { role: "mahasiswa", name: "Test User" },
-        error: null,
-      }),
-    });
+    mockSignIn.mockResolvedValue(undefined);
+    mockGetMyProfile.mockResolvedValue({ role: "mahasiswa" });
   });
 
-  it("renders the login form with campus ID and password fields", () => {
+  it("renders the login form with email and password fields", () => {
     renderLogin();
-    expect(screen.getByLabelText(/Campus ID/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Campus Email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
   });
 
@@ -68,7 +62,7 @@ describe("Login Page", () => {
   it("shows error when password is empty", async () => {
     const user = userEvent.setup();
     renderLogin();
-    await user.type(screen.getByLabelText(/Campus ID/i), "testuser");
+    await user.type(screen.getByLabelText(/Campus Email/i), "testuser");
     await user.click(screen.getByRole("button", { name: /Sign In/i }));
     expect(screen.getByText(/Password is required/)).toBeInTheDocument();
   });
@@ -86,28 +80,29 @@ describe("Login Page", () => {
 
   it("shows error on invalid credentials", async () => {
     const user = userEvent.setup();
-    mockSignInWithPassword.mockResolvedValue({
-      data: null,
-      error: { message: "Invalid login credentials" },
-    });
-    mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          maybeSingle: vi.fn().mockResolvedValue({
-            data: { users: { email: "test@test.com" } },
-            error: null,
-          }),
-        }),
-      }),
-    });
+    mockSignIn.mockRejectedValue(new Error("Invalid login credentials"));
 
     renderLogin();
-    await user.type(screen.getByLabelText(/Campus ID/i), "10221001");
+    await user.type(screen.getByLabelText(/Campus Email/i), "test@mhs.unj.ac.id");
     await user.type(screen.getByLabelText(/Password/i), "wrongpassword");
     await user.click(screen.getByRole("button", { name: /Sign In/i }));
 
     await waitFor(() => {
       expect(screen.getByText("Invalid login credentials")).toBeInTheDocument();
+    });
+  });
+
+  it("redirects to the role dashboard after a successful sign in", async () => {
+    const user = userEvent.setup();
+    mockGetMyProfile.mockResolvedValue({ role: "dosen" });
+
+    renderLogin();
+    await user.type(screen.getByLabelText(/Campus Email/i), "samudra.adi@unj.ac.id");
+    await user.type(screen.getByLabelText(/Password/i), "KlasDemo#2026");
+    await user.click(screen.getByRole("button", { name: /Sign In/i }));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/dosen");
     });
   });
 });

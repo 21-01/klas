@@ -13,14 +13,6 @@ vi.mock("react-router", async () => {
   };
 });
 
-vi.mock("../../app/lib/supabase", () => ({
-  supabase: {
-    auth: {
-      signOut: vi.fn().mockResolvedValue({ error: null }),
-    },
-  },
-}));
-
 vi.mock("../../app/components/Toast", () => ({
   useToast: () => ({ success: vi.fn(), error: vi.fn(), info: vi.fn() }),
   ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
