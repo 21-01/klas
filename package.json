@@ -17,7 +17,8 @@
     "db:seed": "node scripts/seed.mjs",
     "db:setup": "pnpm db:schema && pnpm db:auth-users && pnpm db:seed",
     "neon:deploy": "neon deploy --env .env.local",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:realtime": "node scripts/smoke-realtime.mjs"
   },
   "dependencies": {
     "@neon/auth": "^0.8.2",
