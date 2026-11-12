@@ -130,7 +130,7 @@ The Admin pages target a large desktop viewport with a fixed left sidebar naviga
 
 1. Start the React Router v8 dev server:
    ```bash
-   npm run dev
+   pnpm dev
    ```
 2. Navigate to:
    - Hero / Landing page: `http://localhost:5173/`
@@ -141,5 +141,5 @@ The Admin pages target a large desktop viewport with a fixed left sidebar naviga
 
 3. Verify that the build type-checks cleanly and packages correctly:
    ```bash
-   npm run build
+   pnpm build
    ```

@@ -8,10 +8,10 @@ KLAS is a web-based student attendance verification system designed to replace c
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Start the development server with auto-restart on file changes
-npm run dev
+pnpm dev
 ```
 
 ## Overview
@@ -68,19 +68,19 @@ klas-frontend/
 ### Prerequisites
 
 - Node.js 20+ installed on your machine
-- Supabase CLI installed (`npx supabase --version`)
+- Supabase CLI installed (`pnpm exec supabase --version`)
 
 ### Core Frontend Commands
 
-| Command              | What it does                                          |
-| -------------------- | ----------------------------------------------------- |
-| `npm run dev`        | Start development server (React Router dev, not Vite) |
-| `npm run dev:tunnel` | Start with `--host` for Cloudflare tunnel             |
-| `npm run build`      | Production build for deployment                       |
-| `npm run start`      | Run production server                                 |
-| `npm run typecheck`  | TypeScript type checking (react-router typegen + tsc) |
-| `npm run test`       | Run Vitest test suite                                 |
-| `npm run test:watch` | Run Vitest in watch mode                              |
+| Command            | What it does                                          |
+| ------------------ | ----------------------------------------------------- |
+| `pnpm dev`         | Start development server (React Router dev, not Vite) |
+| `pnpm dev:tunnel`  | Start with `--host` for Cloudflare tunnel             |
+| `pnpm build`       | Production build for deployment                       |
+| `pnpm start`       | Run production server                                 |
+| `pnpm typecheck`   | TypeScript type checking (react-router typegen + tsc) |
+| `pnpm test`        | Run Vitest test suite                                 |
+| `pnpm test:watch`  | Run Vitest in watch mode                              |
 
 ### Supabase Local Development
 
@@ -190,10 +190,10 @@ Tests use:
 
 ```bash
 # Run all tests
-npm run test
+pnpm test
 
 # Run tests in watch mode (auto-rerun on changes)
-npm run test:watch
+pnpm test:watch
 ```
 
 ### Existing Test Coverage

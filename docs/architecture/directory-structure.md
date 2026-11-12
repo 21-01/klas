@@ -10,7 +10,7 @@ klas-frontend/
 ├── Dockerfile
 ├── README.md
 ├── package.json
-├── package-lock.json
+├── pnpm-lock.yaml
 ├── react-router.config.ts
 ├── tsconfig.json
 ├── vite.config.ts
