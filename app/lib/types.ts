@@ -161,7 +161,19 @@ export interface AttendanceLog {
   longitude: number;
   geofence_flagged: boolean;
   geofence_delta_m: number;
-  sesi_kehadiran: {
+  /** New API shape: session + course nested under `sesi`. */
+  sesi?: {
+    tanggal: string;
+    waktu_mulai: string;
+    waktu_selesai: string;
+    mata_kuliah: {
+      kode_mk: string;
+      nama_mk: string;
+      sks: number;
+    };
+  };
+  /** Legacy Supabase shape, kept for compatibility. */
+  sesi_kehadiran?: {
     tanggal: string;
     waktu_mulai: string;
     waktu_selesai: string;
