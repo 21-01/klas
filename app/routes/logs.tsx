@@ -60,7 +60,7 @@ export default function ClassLogs() {
               <div key={log.presensi_id} className="bg-brand-surface flex items-center justify-between p-[16px] w-full rounded-lg">
                 <div className="flex flex-col items-start gap-[2px] mr-2 min-w-0 flex-1">
                   <h4 className="font-semibold text-brand-text text-[16px] leading-snug truncate w-full">
-                    {log.sesi_kehadiran.jadwal_kelas.mata_kuliah.nama_mk}
+                    {(log.sesi_kehadiran?.jadwal_kelas?.mata_kuliah ?? log.sesi?.mata_kuliah)?.nama_mk ?? "Class"}
                   </h4>
                   <span className="text-brand-text-dim text-[12px] truncate w-full">
                     {new Date(log.waktu_check_in).toLocaleDateString("en-US", {
