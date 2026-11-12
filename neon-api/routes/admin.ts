@@ -1,5 +1,6 @@
 import { Hono, type Context } from "hono";
 import { z } from "zod";
+import { uuid as uuidSchema } from "../lib/ids.ts";
 import { many, one, run, transaction, isUniqueViolation } from "../lib/db.ts";
 import { badRequest, conflict, notFound, ok, text } from "../lib/http.ts";
 import { getClientIp, requireAdmin, type AppUser } from "../lib/auth.ts";
@@ -97,11 +98,7 @@ async function deleteAuthUserBestEffort(userId: string): Promise<void> {
 /* Shared schemas                                                             */
 /* -------------------------------------------------------------------------- */
 
-// Permissive UUID shape: the seed data uses synthetic ids that are not
-// RFC-versioned, and Zod 4's z.uuid() rejects those.
-const uuid = z
-  .string()
-  .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/, "Invalid UUID");
+const uuid = uuidSchema("Invalid UUID");
 
 const mahasiswaListSchema = z.object({
   action: z.literal("list"),

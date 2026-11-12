@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { z } from "zod";
+import { uuid } from "../lib/ids.ts";
 import { many, one, transaction } from "../lib/db.ts";
 import { badRequest, forbidden, notFound, ok, text } from "../lib/http.ts";
 import {
@@ -200,11 +201,11 @@ app.post("/update-dosen-profile", async (c) => {
 // ---------------------------------------------------------------------------
 
 const courseStudentsSchema = z.object({
-  jadwal_id: z.uuid(),
+  jadwal_id: uuid(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
   search: z.string().optional(),
-  sesi_id: z.uuid().optional(),
+  sesi_id: uuid().optional(),
 });
 
 app.post("/get-course-students", async (c) => {
@@ -297,7 +298,7 @@ app.post("/get-course-students", async (c) => {
 // ---------------------------------------------------------------------------
 
 const reportSchema = z.object({
-  jadwal_id: z.uuid(),
+  jadwal_id: uuid(),
 });
 
 interface CourseRow {
@@ -437,7 +438,7 @@ app.post("/get-dosen-report", async (c) => {
 });
 
 const exportSchema = z.object({
-  jadwal_id: z.uuid(),
+  jadwal_id: uuid(),
   format: z.enum(["csv"]).default("csv"),
 });
 

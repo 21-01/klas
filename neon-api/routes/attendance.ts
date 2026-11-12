@@ -1,5 +1,6 @@
 import { Hono, type Context } from "hono";
 import { z } from "zod";
+import { uuid } from "../lib/ids.ts";
 import { one, many, run, transaction, isUniqueViolation } from "../lib/db.ts";
 import {
   HttpError,
@@ -230,7 +231,7 @@ app.post("/check-in", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const generateQrTokenSchema = z.object({
-  sesi_id: z.string().uuid("Invalid session ID"),
+  sesi_id: uuid("Invalid session ID"),
   ttl_seconds: z.number().int().min(5).max(60),
   covers: z.number().int().min(1).max(5).optional().default(2),
 });
@@ -283,7 +284,7 @@ app.post("/generate-qr-token", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const openSessionSchema = z.object({
-  jadwal_id: z.string().uuid("Invalid jadwal ID"),
+  jadwal_id: uuid("Invalid jadwal ID"),
   tanggal: z.string().optional(),
   geofence_radius_m: z.number().int().min(1).max(500).optional(),
   qr_rotates_every: z.number().int().min(5).max(60).optional(),
@@ -357,7 +358,7 @@ app.post("/open-session", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const sessionIdSchema = z.object({
-  sesi_id: z.string().uuid("Invalid session ID"),
+  sesi_id: uuid("Invalid session ID"),
 });
 
 app.post("/close-session", async (c) => {
@@ -451,7 +452,7 @@ app.post("/get-live-session", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const listSessionsSchema = z.object({
-  jadwal_id: z.string().uuid("Invalid jadwal ID"),
+  jadwal_id: uuid("Invalid jadwal ID"),
   page: z.number().int().min(1).optional().default(1),
   limit: z.number().int().min(1).max(100).optional().default(10),
 });
@@ -535,7 +536,7 @@ app.post("/list-sessions", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const updateSettingsSchema = z.object({
-  sesi_id: z.string().uuid("Invalid session ID"),
+  sesi_id: uuid("Invalid session ID"),
   geofence_radius_m: z.number().int().min(10).max(500).optional(),
   qr_rotates_every: z.number().int().min(5).max(60).optional(),
 });
@@ -584,7 +585,7 @@ app.post("/update-session-settings", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const updateSessionSchema = z.object({
-  sesi_id: z.string().uuid("Invalid session ID"),
+  sesi_id: uuid("Invalid session ID"),
   tanggal: z.string().optional(),
   geofence_radius_m: z.number().int().min(10).max(500).optional(),
   qr_rotates_every: z.number().int().min(5).max(60).optional(),
@@ -728,7 +729,7 @@ app.post("/delete-session", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const correctAttendanceSchema = z.object({
-  presensi_id: z.string().uuid("Invalid presensi ID"),
+  presensi_id: uuid("Invalid presensi ID"),
   status_baru: attendanceStatus,
   alasan: z.string().optional(),
 });
@@ -787,8 +788,8 @@ app.post("/correct-attendance", async (c) => {
 /* ------------------------------------------------------------------ */
 
 const bulkMarkSchema = z.object({
-  sesi_id: z.string().uuid("Invalid session ID"),
-  mahasiswa_ids: z.array(z.string().uuid()).min(1).max(200),
+  sesi_id: uuid("Invalid session ID"),
+  mahasiswa_ids: z.array(uuid()).min(1).max(200),
   status: attendanceStatus,
 });
 

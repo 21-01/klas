@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { z } from "zod";
+import { uuid } from "../lib/ids.ts";
 import { one, many, run, transaction, isUniqueViolation, isForeignKeyViolation } from "../lib/db.ts";
 import { HttpError, badRequest, unauthorized, forbidden, ok } from "../lib/http.ts";
 import { currentUser, requireAdmin, getClientIp, type AppUser } from "../lib/auth.ts";
@@ -70,17 +71,17 @@ const notificationsSchema = z.discriminatedUnion("action", [
     limit: z.coerce.number().int().min(1).max(100).default(20),
     is_read: z.boolean().optional(),
     tipe: z.string().optional(),
-    user_id: z.uuid().optional(),
+    user_id: uuid().optional(),
     from_date: z.string().optional(),
     to_date: z.string().optional(),
   }),
   z.object({
     action: z.literal("mark-read"),
-    notifikasi_id: z.union([z.uuid(), z.array(z.uuid())]),
+    notifikasi_id: z.union([uuid(), z.array(uuid())]),
   }),
   z.object({
     action: z.literal("mark-all-read"),
-    user_id: z.uuid().optional(),
+    user_id: uuid().optional(),
   }),
   z.object({
     action: z.literal("stats"),

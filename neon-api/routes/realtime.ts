@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { z } from "zod";
+import { uuid } from "../lib/ids.ts";
 import { createRealtime, rawSql } from "@neon/realtime/server";
 import { env } from "../lib/env.ts";
 import { badRequest, corsHeaders, HttpError } from "../lib/http.ts";
@@ -92,7 +93,7 @@ function parseBody<S extends z.ZodType>(schema: S, value: unknown): z.output<S> 
   return result.data;
 }
 
-const sessionBody = z.object({ sesi_id: z.uuid() });
+const sessionBody = z.object({ sesi_id: uuid() });
 
 // ---------------------------------------------------------------------------
 // Routes
