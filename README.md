@@ -217,10 +217,56 @@ See `.env.example` for the full list, including the server-side `DATABASE_URL`,
 
 ### React Router Configuration
 
-`react-router.config.ts`:
+`react-router.config.ts` runs in SPA mode (`ssr: false`). Every route loads its
+data in a `clientLoader` and no loader touches the server, so the production
+build is the static `build/client` folder served by Vercel. Set `ssr: true` to
+render on a Node server with `pnpm start` instead.
 
-- SSR enabled by default
-- Can be disabled for SPA mode
+---
+
+## 🚀 Deployment (Vercel)
+
+The frontend is a static SPA on Vercel; the API, auth, realtime service and
+database live in Neon (`ap-southeast-1`).
+
+1. **Deploy the Neon functions** so the browser has an API to call:
+
+   ```bash
+   npx neon deploy --env .env.local --yes
+   npx neon functions list          # `api` and `cron` should be `completed`
+   pnpm smoke                      # end-to-end checks against the deployed API
+   ```
+
+2. **Import the repository on Vercel** (`vercel.com/new`) with:
+   - Framework preset: **Vite** (already pinned in `vercel.json`)
+   - Build command: `pnpm build`, output directory: `build/client`
+   - Node.js version: 22 (`22.x`, from `.nvmrc`)
+   - Region: **Singapore (sin1)**, same region as the Neon branch
+   - Environment variables (Production and Preview):
+
+     ```bash
+     VITE_NEON_AUTH_URL=https://ep-winter-hat-az4t5c3x.neonauth.c-3.ap-southeast-1.aws.neon.tech/neondb/auth
+     VITE_NEON_API_URL=https://br-wild-unit-azq7a8bc-api.compute.c-3.ap-southeast-1.aws.neon.tech
+     VITE_NEON_REALTIME_URL=wss://ep-winter-hat-az4t5c3x.rt.c-3.ap-southeast-1.aws.neon.tech/
+     ```
+
+     `VITE_*` values are inlined at build time: change one and redeploy.
+
+3. **Allow the new origin** in both places, or sign-in and API calls fail:
+   - CORS: add the Vercel origin to `KLAS_CORS_ORIGINS` in `.env.local`, then
+     redeploy the function (`npx neon deploy --env .env.local --yes`). Matching
+     is exact, so list each origin, including preview URLs you want to test.
+   - Neon Auth trusted domains:
+     `npx neon neon-auth domain add https://<project>.vercel.app --branch production`
+     (plus `https://<project>-*.vercel.app` for preview deployments).
+
+4. **Verify** the deployed URL: landing page, sign-in, dashboard, scanner, and
+   `pnpm smoke` for the API.
+
+Neon Auth sets its session cookie with `SameSite=None; Partitioned`, so Safari
+and some in-app browsers may drop it. The workaround is proxying
+`/api/auth/*` to Neon Auth through a Vercel rewrite and pointing
+`VITE_NEON_AUTH_URL` at the same origin.
 
 ---
 
