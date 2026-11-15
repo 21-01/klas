@@ -7,6 +7,9 @@ export default [
   // Login Page
   route("login", "routes/login.tsx"),
 
+  // 404 — unmatched URLs
+  route("*", "routes/404.tsx"),
+
   // Mahasiswa (Student) Role Pages
   route("mahasiswa", "routes/layout.tsx", [
     index("routes/dashboard.tsx"),
