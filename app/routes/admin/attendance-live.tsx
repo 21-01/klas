@@ -223,64 +223,65 @@ export default function AdminAttendanceLive() {
   const checkins = sessionData?.recent_checkins ?? [];
 
   return (
-    <div className="flex flex-col gap-[32px] w-full">
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-[16px]">
+    <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[32px] w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
+        <div className="flex items-center gap-[12px] sm:gap-[16px] min-w-0">
           <Link to="/admin/attendance" className="p-2 border border-brand-border hover:bg-slate-100 rounded-[10px] text-brand-primary transition-colors cursor-pointer shrink-0">
             <ArrowLeft size={20} />
           </Link>
-          <div className="flex flex-col items-start">
-            <span className="font-semibold text-brand-text-dim text-[11px] tracking-[1px] uppercase">
-              LIVE MONITORING SESSION
-            </span>
-            <h1 className="font-bold text-brand-primary text-[24px] tracking-[-0.5px]">
+          <div className="flex flex-col items-start min-w-0">
+            <h1 className="font-bold text-brand-primary text-[18px] sm:text-[22px] lg:text-[24px] tracking-[-0.5px] truncate max-w-full">
               {courseData ? `${courseData.mata_kuliah.kode_mk} — ${courseData.mata_kuliah.nama_mk}` : "Session Overview"}
             </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-[12px]">
+        <div className="flex items-center gap-[8px] sm:gap-[12px] flex-wrap">
           <Link
             to={`/admin/attendance/correction/${jadwal_id}`}
-            className="bg-white border border-brand-border hover:bg-slate-50 text-brand-primary px-[16px] py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+            title="Manual Correction"
+            className="bg-white border border-brand-border hover:bg-slate-50 text-brand-primary px-[12px] xl:px-[16px] py-[8px] sm:py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <FileText size={16} />
-            <span className="hidden sm:inline">Manual Correction</span>
+            <span className="hidden xl:inline">Manual Correction</span>
           </Link>
           <Link
             to={`/admin/attendance/${jadwal_id}/sessions`}
-            className="bg-white border border-brand-border hover:bg-slate-50 text-brand-primary px-[16px] py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+            title="Sessions"
+            className="bg-white border border-brand-border hover:bg-slate-50 text-brand-primary px-[12px] xl:px-[16px] py-[8px] sm:py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <History size={16} />
-            <span className="hidden sm:inline">Sessions</span>
+            <span className="hidden xl:inline">Sessions</span>
           </Link>
           {sessionData?.status === "live" ? (
             <button
               onClick={handleCloseSession}
               disabled={closing}
-              className="bg-red-600 hover:bg-red-700 text-white px-[20px] py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              title="End Session"
+              className="bg-red-600 hover:bg-red-700 text-white px-[14px] xl:px-[20px] py-[8px] sm:py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {closing ? <Loader2 size={16} className="animate-spin" /> : <XCircle size={16} />}
-              <span>End Session</span>
+              <span className="hidden xl:inline">End Session</span>
             </button>
           ) : (
             <button
               onClick={handleOpenSession}
               disabled={opening}
-              className="bg-brand-secondary hover:bg-brand-primary text-white px-[20px] py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Open Session"
+              className="bg-brand-secondary hover:bg-brand-primary text-white px-[14px] xl:px-[20px] py-[8px] sm:py-[10px] rounded-[10px] font-bold text-[13px] transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {opening ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-              <span>Open Session</span>
+              <span className="hidden xl:inline">Open Session</span>
             </button>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-[32px] w-full items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-[20px] lg:gap-[24px] xl:gap-[32px] w-full items-start">
 
-        <div className="lg:col-span-5 flex flex-col gap-[24px] w-full">
-          <div className="bg-white border border-brand-border rounded-[16px] p-[28px] flex flex-col items-center gap-[24px] shadow-sm relative overflow-hidden">
-            <div className="relative border-2 border-brand-secondary p-[20px] rounded-[16px] bg-slate-50 size-[320px] flex items-center justify-center shadow-inner">
+        <div className="lg:col-span-5 flex flex-col gap-[20px] sm:gap-[24px] w-full">
+          <div className="bg-white border border-brand-border rounded-[16px] p-[18px] sm:p-[20px] xl:p-[28px] flex flex-col items-center gap-[20px] sm:gap-[24px] shadow-sm relative overflow-hidden">
+            <div className="relative border-2 border-brand-secondary p-[16px] sm:p-[20px] rounded-[16px] bg-slate-50 size-[260px] sm:size-[280px] xl:size-[320px] max-w-full flex items-center justify-center shadow-inner">
               <div className="absolute left-[24px] right-[24px] h-[3px] bg-brand-primary shadow-[0_0_12px_rgba(0,17,58,0.6)] animate-[bounce_3s_infinite] opacity-80" />
               <div className="absolute border-t-4 border-l-4 border-brand-primary top-[-3px] left-[-3px] size-[24px] rounded-tl-[8px]" />
               <div className="absolute border-t-4 border-r-4 border-brand-primary top-[-3px] right-[-3px] size-[24px] rounded-tr-[8px]" />
@@ -381,7 +382,7 @@ export default function AdminAttendanceLive() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <input
-                        type="range" min="10" max="500"
+                        type="range" min="10" max="500" step="5"
                         value={radius}
                         onChange={(e) => setRadius(Number(e.target.value))}
                         className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-secondary"
@@ -419,7 +420,7 @@ export default function AdminAttendanceLive() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <input
-                        type="range" min="5" max="60" step="1"
+                        type="range" min="5" max="60" step="5"
                         value={qrRotatesEvery}
                         onChange={(e) => setQrRotatesEvery(Number(e.target.value))}
                         className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-secondary"

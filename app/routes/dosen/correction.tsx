@@ -143,18 +143,15 @@ export default function DosenCorrection() {
   }
 
   return (
-    <div className="flex flex-col gap-[32px] w-full">
+    <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[32px] w-full">
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-[24px]">
-        <div className="flex items-center gap-[16px]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-[16px] sm:gap-[24px]">
+        <div className="flex items-center gap-[12px] sm:gap-[16px]">
           <Link to={`/dosen/attendance/${jadwal_id}`} className="p-2 border border-brand-border hover:bg-slate-100 rounded-[10px] text-brand-primary transition-colors cursor-pointer shrink-0">
             <ArrowLeft size={20} />
           </Link>
           <div className="flex flex-col items-start">
-            <span className="font-semibold text-brand-text-dim text-[11px] tracking-[1px] uppercase">
-              ADMINISTRATIVE TOOL
-            </span>
-            <h1 className="font-bold text-brand-primary text-[28px] tracking-[-0.5px]">
+            <h1 className="font-bold text-brand-primary text-[20px] sm:text-[24px] lg:text-[28px] tracking-[-0.5px]">
               Manual Attendance Correction
             </h1>
           </div>
@@ -183,7 +180,7 @@ export default function DosenCorrection() {
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-[12px]">
         <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">SESSION:</span>
-        <div className="relative shrink-0 w-full sm:w-[320px]">
+        <div className="relative shrink-0 w-full sm:w-[360px]">
           <select
             value={selectedSesiId}
             onChange={(e) => setSelectedSesiId(e.target.value)}
@@ -193,11 +190,18 @@ export default function DosenCorrection() {
             {sessions.length === 0 ? (
               <option>No sessions found</option>
             ) : (
-              sessions.map((s) => (
-                <option key={s.sesi_id} value={s.sesi_id}>
-                  {s.tanggal} — {s.status}
-                </option>
-              ))
+              sessions.map((s) => {
+                const dateStr = s.tanggal ? (s.tanggal.includes("T") ? s.tanggal.split("T")[0] : s.tanggal) : "";
+                let timeStr = "";
+                if (s.waktu_mulai) {
+                  timeStr = s.waktu_mulai.includes("T") ? s.waktu_mulai.substring(11, 16) : s.waktu_mulai.substring(0, 5);
+                }
+                return (
+                  <option key={s.sesi_id} value={s.sesi_id}>
+                    {dateStr}{timeStr ? ` (${timeStr})` : ""} — {s.status}
+                  </option>
+                );
+              })
             )}
           </select>
           <div className="absolute top-1/2 right-[16px] -translate-y-1/2 pointer-events-none text-brand-text-dim">
@@ -206,37 +210,40 @@ export default function DosenCorrection() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-[16px] w-full">
-        <div className="bg-white border border-brand-border rounded-[16px] p-[20px] flex flex-col gap-[6px] shadow-sm">
-          <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">TOTAL CLASS SIZE</span>
-          <span className="font-extrabold text-brand-primary text-[28px]">{total} Students</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[12px] sm:gap-[16px] w-full">
+        <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[20px] flex flex-col justify-between gap-[8px] shadow-sm">
+          <div className="flex items-center justify-between min-h-[20px]">
+            <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">TOTAL STUDENT</span>
+            <span className="text-brand-text-dim/60 text-[10px] font-bold uppercase tracking-[0.5px]">Enrolled</span>
+          </div>
+          <span className="font-extrabold text-brand-primary text-[24px] sm:text-[28px] leading-tight">{total}</span>
         </div>
-        <div className="bg-white border border-brand-border rounded-[16px] p-[20px] flex flex-col gap-[6px] shadow-sm">
-          <div className="flex items-center justify-between">
+        <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[20px] flex flex-col justify-between gap-[8px] shadow-sm">
+          <div className="flex items-center justify-between min-h-[20px]">
             <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">PRESENT & LATE</span>
             <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-[6px] py-[2px] rounded">
               {total > 0 ? Math.round(((present + late) / total) * 100) : 0}%
             </span>
           </div>
-          <span className="font-extrabold text-emerald-600 text-[28px]">{present + late} <span className="text-orange-500">({late})</span></span>
+          <span className="font-extrabold text-emerald-600 text-[24px] sm:text-[28px] leading-tight">{present + late} <span className="text-orange-500 text-[20px] sm:text-[24px]">({late})</span></span>
         </div>
-        <div className="bg-white border border-brand-border rounded-[16px] p-[20px] flex flex-col gap-[6px] shadow-sm">
-          <div className="flex items-center justify-between">
+        <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[20px] flex flex-col justify-between gap-[8px] shadow-sm">
+          <div className="flex items-center justify-between min-h-[20px]">
             <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">ABSENT</span>
             <span className="bg-red-100 text-red-800 text-[10px] font-bold px-[6px] py-[2px] rounded">
               {total > 0 ? Math.round((absent / total) * 100) : 0}%
             </span>
           </div>
-          <span className="font-extrabold text-red-600 text-[28px]">{absent}</span>
+          <span className="font-extrabold text-red-600 text-[24px] sm:text-[28px] leading-tight">{absent}</span>
         </div>
-        <div className="bg-white border border-brand-border rounded-[16px] p-[20px] flex flex-col gap-[6px] shadow-sm">
-          <div className="flex items-center justify-between">
+        <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[20px] flex flex-col justify-between gap-[8px] shadow-sm">
+          <div className="flex items-center justify-between min-h-[20px]">
             <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">EXCUSED</span>
             <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-[6px] py-[2px] rounded">
               {total > 0 ? Math.round((excused / total) * 100) : 0}%
             </span>
           </div>
-          <span className="font-extrabold text-amber-600 text-[28px]">{excused}</span>
+          <span className="font-extrabold text-amber-600 text-[24px] sm:text-[28px] leading-tight">{excused}</span>
         </div>
       </div>
 
@@ -268,7 +275,58 @@ export default function DosenCorrection() {
           </div>
         </div>
 
-        <div className="w-full overflow-x-auto">
+        {/* Below md: Mobile Card Layout */}
+        <div className="md:hidden flex flex-col gap-[10px] p-[12px] bg-slate-50/20">
+          {filteredStudents.length > 0 ? filteredStudents.map((student) => {
+            const orig = originalStudents.find((o) => o.id === student.id);
+            const isModified = orig && orig.status !== student.status;
+            return (
+              <div key={student.id} className="bg-white border border-brand-border/60 rounded-[12px] p-[14px] flex flex-col gap-[10px] shadow-sm">
+                <div className="flex items-center justify-between gap-[8px]">
+                  <div className="flex items-center gap-[10px] min-w-0">
+                    <div className="size-[32px] bg-slate-100 border border-brand-border/60 text-brand-primary text-[12px] font-extrabold flex items-center justify-center rounded-[8px] shrink-0">
+                      {student.initials}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap">{student.name}</span>
+                      <span className="font-mono text-brand-text-dim text-[11px]">{student.nim}</span>
+                    </div>
+                  </div>
+                  {isModified && (
+                    <span className="bg-brand-secondary/10 text-brand-secondary border border-brand-secondary/30 text-[9px] font-extrabold px-[8px] py-[3px] rounded-full uppercase tracking-[0.5px] shrink-0">
+                      Modified
+                    </span>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-brand-border/30">
+                  <span className="text-[10px] font-bold text-brand-text-dim uppercase tracking-[0.5px] mb-1.5 block">Attendance Status:</span>
+                  <div className="grid grid-cols-2 gap-1.5 p-[3px] bg-slate-100 rounded-[10px] border border-brand-border/30">
+                    {["present", "absent", "excused", "late"].map((status) => (
+                      <button key={status} onClick={() => handleStatusChange(student.id, status)}
+                        className={cn("px-[8px] py-[6px] text-[11px] font-bold uppercase rounded-[8px] cursor-pointer transition-all flex items-center justify-center gap-[4px]",
+                          student.status === status
+                            ? status === "present" ? "bg-emerald-600 text-white shadow-sm"
+                              : status === "absent" ? "bg-red-600 text-white shadow-sm"
+                                : status === "late" ? "bg-orange-600 text-white shadow-sm"
+                                  : "bg-amber-600 text-white shadow-sm"
+                            : "text-brand-text-dim hover:bg-white/50 bg-white/40"
+                        )}>
+                        {status === "present" ? <CheckCircle size={12} /> : status === "absent" ? <XCircle size={12} /> : <AlertCircle size={12} />}
+                        <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          }) : (
+            <div className="p-8 text-center text-brand-text-dim italic bg-white rounded-[12px] border border-brand-border/40">No students match the selected search filters.</div>
+          )}
+        </div>
+
+        {/* md and above: Table */}
+        <div className="hidden md:block w-full overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-slate-50 border-b border-brand-border text-brand-text-dim text-[11px] font-bold uppercase tracking-[1px]">
@@ -294,10 +352,10 @@ export default function DosenCorrection() {
                     <td className="px-[24px] py-[18px]">
                       <div className="flex items-center gap-[12px] min-w-0">
                         <div className="size-[32px] bg-slate-100 border border-brand-border/60 text-brand-primary text-[12px] font-extrabold flex items-center justify-center rounded-[8px] shrink-0">{student.initials}</div>
-                        <span className="font-bold text-[14px] text-brand-primary truncate">{student.name}</span>
+                        <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap max-w-[200px] xl:max-w-[320px]">{student.name}</span>
                       </div>
                     </td>
-                    <td className="px-[24px] py-[18px]">
+                    <td className="px-[24px] py-[18px] whitespace-nowrap">
                       <span className="font-mono text-brand-text-dim text-[13px]">{student.nim}</span>
                     </td>
                     <td className="px-[24px] py-[18px]">

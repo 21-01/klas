@@ -34,20 +34,17 @@ export default function AttendanceIndex() {
   }
 
   return (
-    <div className="flex flex-col gap-[40px] w-full">
+    <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[32px] w-full">
       <div className="flex flex-col items-start gap-[4px] pb-2 border-b border-brand-border/40">
-        <span className="font-semibold text-brand-text-dim text-[12px] tracking-[1.2px] uppercase">
-          ATTENDANCE
-        </span>
-        <h1 className="font-bold text-brand-primary text-[32px] tracking-[-0.64px] leading-tight">
+        <h1 className="font-bold text-brand-primary text-[22px] sm:text-[26px] lg:text-[32px] tracking-[-0.4px] sm:tracking-[-0.64px] leading-tight">
           Select a Course
         </h1>
-        <p className="text-brand-text-dim text-[14px] mt-1">
+        <p className="text-brand-text-dim text-[13px] sm:text-[14px] mt-0.5">
           Choose a course to manage live attendance.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[24px] w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] sm:gap-[24px] w-full">
         {courses.map((course) => {
           const isLive = course.latest_session?.status === "live";
           return (
@@ -55,27 +52,27 @@ export default function AttendanceIndex() {
               key={course.jadwal_id}
               to={`/dosen/attendance/${course.jadwal_id}`}
               className={cn(
-                "bg-white border-2 rounded-[16px] p-[24px] flex flex-col gap-[20px] relative transition-all shadow-sm overflow-hidden group",
+                "bg-white border-2 rounded-[16px] p-[16px] sm:p-[24px] flex flex-col gap-[16px] sm:gap-[20px] relative transition-all shadow-sm overflow-hidden group",
                 isLive
                   ? "border-brand-secondary shadow-md hover:shadow-lg"
                   : "border-brand-border hover:border-brand-secondary/40 hover:shadow-md"
               )}
             >
-              <div className="flex flex-col gap-[4px]">
-                <h2 className="font-bold text-brand-primary text-[20px] leading-tight">
+              <div className="flex flex-col gap-[4px] min-w-0">
+                <h2 className="font-bold text-brand-primary text-[17px] sm:text-[20px] leading-tight line-clamp-2 break-words">
                   {course.mata_kuliah.kode_mk} - {course.mata_kuliah.nama_mk}
                 </h2>
-                <div className="flex items-center gap-[6px] text-brand-text-dim text-[13px] font-semibold">
-                  <Users size={16} />
+                <div className="flex items-center gap-[6px] text-brand-text-dim text-[12px] sm:text-[13px] font-semibold">
+                  <Users size={15} />
                   <span>{course.enrolled} Students Enrolled</span>
                 </div>
               </div>
 
               <hr className="border-brand-border/40" />
 
-              <div className="flex gap-[16px] items-center text-brand-text-dim text-[13px] font-semibold">
+              <div className="flex flex-wrap gap-[12px] sm:gap-[16px] items-center text-brand-text-dim text-[12px] sm:text-[13px] font-semibold">
                 <div className="flex items-center gap-[6px]">
-                  <Clock size={16} />
+                  <Clock size={15} />
                   <span>
                     {course.hari ? course.hari.substring(0, 3) + ", " : ""}
                     {course.waktu_mulai?.substring(0, 5)}-
@@ -83,8 +80,8 @@ export default function AttendanceIndex() {
                   </span>
                 </div>
                 <div className="flex items-center gap-[6px]">
-                  <MapPin size={16} />
-                  <span>{course.ruangan ?? "TBD"}</span>
+                  <MapPin size={15} />
+                  <span className="truncate">{course.ruangan ?? "TBD"}</span>
                 </div>
               </div>
 

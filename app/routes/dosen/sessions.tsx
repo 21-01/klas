@@ -125,6 +125,12 @@ export default function SessionsHistory() {
     }
   };
 
+  const formatTimeHHMM = (t?: string) => {
+    if (!t) return "";
+    if (t.includes("T")) return t.substring(11, 16);
+    return t.substring(0, 5);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -134,20 +140,17 @@ export default function SessionsHistory() {
   }
 
   return (
-    <div className="flex flex-col gap-[32px] w-full">
+    <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[32px] w-full">
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-[16px]">
+        <div className="flex items-center gap-[12px] sm:gap-[16px] min-w-0">
           <Link
             to={`/dosen/attendance/${jadwal_id}`}
             className="p-2 border border-brand-border hover:bg-slate-100 rounded-[10px] text-brand-primary transition-colors cursor-pointer shrink-0"
           >
             <ArrowLeft size={20} />
           </Link>
-          <div className="flex flex-col items-start">
-            <span className="font-semibold text-brand-text-dim text-[11px] tracking-[1px] uppercase">
-              SESSION MANAGEMENT
-            </span>
-            <h1 className="font-bold text-brand-primary text-[28px] tracking-[-0.5px]">
+          <div className="flex flex-col items-start min-w-0">
+            <h1 className="font-bold text-brand-primary text-[18px] sm:text-[22px] lg:text-[28px] tracking-[-0.5px] truncate max-w-full">
               {courseInfo ? `${courseInfo.mata_kuliah.kode_mk} — ${courseInfo.mata_kuliah.nama_mk}` : "Session History"}
             </h1>
           </div>
@@ -173,50 +176,50 @@ export default function SessionsHistory() {
                 <div
                   key={session.sesi_id}
                   className={cn(
-                    "bg-white border-2 rounded-[16px] p-[24px] flex flex-col gap-[16px] transition-all",
+                    "bg-white border-2 rounded-[16px] p-[16px] sm:p-[24px] flex flex-col gap-[14px] sm:gap-[16px] transition-all shadow-sm",
                     isLive ? "border-brand-secondary shadow-md" : "border-brand-border"
                   )}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-[12px]">
+                  <div className="flex flex-wrap items-center justify-between gap-[8px]">
+                    <div className="flex flex-wrap items-center gap-[8px] sm:gap-[12px]">
                       <span
                         className={cn(
-                          "font-bold text-[10px] tracking-[-0.3px] uppercase px-[12px] py-[4px] rounded-full text-white",
+                          "font-bold text-[10px] tracking-[-0.3px] uppercase px-[10px] py-[3px] rounded-full text-white",
                           isLive ? "bg-brand-secondary animate-pulse" : "bg-amber-600"
                         )}
                       >
                         {isLive ? "LIVE" : "COMPLETED"}
                       </span>
-                      <div className="flex items-center gap-[6px] text-brand-text-dim text-[13px] font-semibold">
+                      <div className="flex items-center gap-[6px] text-brand-text-dim text-[12px] sm:text-[13px] font-semibold">
                         <Calendar size={14} />
                         <span>{session.tanggal}</span>
                       </div>
-                      <div className="flex items-center gap-[6px] text-brand-text-dim text-[13px] font-semibold">
+                      <div className="flex items-center gap-[6px] text-brand-text-dim text-[12px] sm:text-[13px] font-semibold">
                         <Clock size={14} />
                         <span>
-                          {session.waktu_mulai?.substring(11, 16)}
-                          {session.waktu_selesai ? ` — ${session.waktu_selesai.substring(11, 16)}` : ""}
+                          {formatTimeHHMM(session.waktu_mulai)}
+                          {session.waktu_selesai ? ` — ${formatTimeHHMM(session.waktu_selesai)}` : ""}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-[24px]">
+                  <div className="flex flex-wrap items-center gap-[12px] sm:gap-[24px] py-1 border-y border-brand-border/30">
                     <div className="flex items-center gap-[6px]">
                       <Users size={14} className="text-emerald-600" />
-                      <span className="text-[13px] font-bold text-emerald-600">{session.present_count} present</span>
+                      <span className="text-[12px] sm:text-[13px] font-bold text-emerald-600">{session.present_count} present</span>
                     </div>
                     <div className="flex items-center gap-[6px]">
                       <Users size={14} className="text-red-500" />
-                      <span className="text-[13px] font-bold text-red-500">{session.absent_count} absent</span>
+                      <span className="text-[12px] sm:text-[13px] font-bold text-red-500">{session.absent_count} absent</span>
                     </div>
-                    <div className="text-[13px] font-bold text-brand-primary">{attendanceRate}%</div>
+                    <div className="text-[12px] sm:text-[13px] font-bold text-brand-primary">{attendanceRate}%</div>
                     <div className="text-[11px] text-brand-text-dim font-semibold">
                       {session.geofence_radius_m}m radius · {session.qr_rotates_every}s QR
                     </div>
                   </div>
 
-                  <div className="flex gap-[8px]">
+                  <div className="flex flex-wrap items-center gap-[8px]">
                     {isLive ? (
                       <Link
                         to={`/dosen/attendance/${jadwal_id}`}
@@ -252,7 +255,7 @@ export default function SessionsHistory() {
                     )}
                     <Link
                       to={`/dosen/attendance/correction/${jadwal_id}?sesi_id=${session.sesi_id}`}
-                      className="ml-auto bg-brand-surface border border-brand-border hover:bg-slate-100 text-brand-primary text-[12px] font-bold py-[8px] px-[16px] rounded-[8px] transition-all flex items-center gap-2"
+                      className="sm:ml-auto bg-brand-surface border border-brand-border hover:bg-slate-100 text-brand-primary text-[12px] font-bold py-[8px] px-[16px] rounded-[8px] transition-all flex items-center gap-2"
                     >
                       <span>Correction</span>
                     </Link>

@@ -44,16 +44,13 @@ export default function AdminAttendanceIndex() {
   }
 
   return (
-    <div className="flex flex-col gap-[40px] w-full">
+    <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[32px] w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 w-full pb-2 border-b border-brand-border/40">
         <div className="flex flex-col items-start gap-[4px]">
-          <span className="font-semibold text-brand-text-dim text-[11px] tracking-[1.2px] uppercase">
-            ATTENDANCE MANAGEMENT
-          </span>
-          <h1 className="font-bold text-brand-primary text-[32px] tracking-[-0.64px] leading-tight">
+          <h1 className="font-bold text-brand-primary text-[22px] sm:text-[26px] lg:text-[32px] tracking-[-0.4px] sm:tracking-[-0.64px] leading-tight">
             Select a Course
           </h1>
-          <p className="text-brand-text-dim text-[14px] mt-1">
+          <p className="text-brand-text-dim text-[13px] sm:text-[14px] mt-0.5">
             Manage live attendance for any course in your program.
           </p>
         </div>
@@ -64,12 +61,12 @@ export default function AdminAttendanceIndex() {
             placeholder="Search course, code, or lecturer..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-brand-border text-brand-text placeholder-brand-text-dim/60 rounded-[10px] pl-[36px] pr-[12px] py-[10px] text-[13px] font-semibold focus:outline-none focus:border-brand-secondary"
+            className="w-full bg-white border border-brand-border text-brand-text placeholder-brand-text-dim/60 rounded-[10px] pl-[36px] pr-[12px] py-[8px] sm:py-[10px] text-[13px] font-semibold focus:outline-none focus:border-brand-secondary"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[24px] w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] sm:gap-[24px] w-full">
         {filtered.map((course) => {
           const isLive = course.latest_session?.status === "live";
           return (
@@ -77,7 +74,7 @@ export default function AdminAttendanceIndex() {
               key={course.jadwal_id}
               to={`/admin/attendance/${course.jadwal_id}`}
               className={cn(
-                "bg-white border-2 rounded-[16px] p-[24px] flex flex-col gap-[20px] relative transition-all shadow-sm overflow-hidden group",
+                "bg-white border-2 rounded-[16px] p-[16px] sm:p-[24px] flex flex-col gap-[16px] sm:gap-[20px] relative transition-all shadow-sm overflow-hidden group",
                 isLive
                   ? "border-brand-secondary shadow-md hover:shadow-lg"
                   : "border-brand-border hover:border-brand-secondary/40 hover:shadow-md"
@@ -90,24 +87,24 @@ export default function AdminAttendanceIndex() {
                 </div>
               )}
 
-              <div className="flex flex-col gap-[4px]">
-                <h2 className="font-bold text-brand-primary text-[20px] leading-tight">
+              <div className="flex flex-col gap-[4px] min-w-0">
+                <h2 className="font-bold text-brand-primary text-[17px] sm:text-[20px] leading-tight line-clamp-2 break-words">
                   {course.mata_kuliah.kode_mk} - {course.mata_kuliah.nama_mk}
                 </h2>
-                <div className="flex items-center gap-[6px] text-brand-text-dim text-[13px] font-semibold">
-                  <Users size={16} />
+                <div className="flex items-center gap-[6px] text-brand-text-dim text-[12px] sm:text-[13px] font-semibold">
+                  <Users size={15} />
                   <span>{course.enrolled} Students Enrolled</span>
                 </div>
-                <div className="flex items-center gap-[6px] text-brand-text-dim text-[13px] font-semibold">
-                  <span className="text-[12px]">Lecturer: {course.dosen?.nama}</span>
+                <div className="flex items-center gap-[6px] text-brand-text-dim text-[12px] sm:text-[13px] font-semibold">
+                  <span className="truncate">Lecturer: {course.dosen?.nama}</span>
                 </div>
               </div>
 
               <hr className="border-brand-border/40" />
 
-              <div className="flex gap-[16px] items-center text-brand-text-dim text-[13px] font-semibold">
+              <div className="flex gap-[16px] items-center text-brand-text-dim text-[12px] sm:text-[13px] font-semibold">
                 <div className="flex items-center gap-[6px]">
-                  <Clock size={16} />
+                  <Clock size={15} />
                   <span>
                     {course.hari ? course.hari.substring(0, 3) + ", " : ""}
                     {course.waktu_mulai?.substring(0, 5)}-

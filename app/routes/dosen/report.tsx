@@ -77,20 +77,20 @@ export default function DosenReport() {
   }
 
   return (
-    <div className="flex flex-col gap-[40px] w-full">
+    <div className="flex flex-col gap-[24px] sm:gap-[32px] lg:gap-[40px] w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 w-full pb-2 border-b border-brand-border/40">
         <div className="flex flex-col items-start gap-[4px]">
-          <span className="font-semibold text-brand-text-dim text-[12px] tracking-[1.2px] uppercase">
+          <span className="font-semibold text-brand-text-dim text-[11px] sm:text-[12px] tracking-[1.2px] uppercase">
             ANALYTICS & ARCHIVES
           </span>
-          <h1 className="font-bold text-brand-primary text-[32px] tracking-[-0.64px] leading-tight">
+          <h1 className="font-bold text-brand-primary text-[22px] sm:text-[26px] lg:text-[32px] tracking-[-0.4px] sm:tracking-[-0.64px] leading-tight">
             Academic Dashboard
           </h1>
         </div>
 
-        <div className="flex gap-[12px] items-center shrink-0">
+        <div className="flex flex-wrap gap-[10px] sm:gap-[12px] items-center w-full sm:w-auto shrink-0">
           <select value={selectedCourseId} onChange={(e) => setSelectedCourseId(e.target.value)}
-            className="bg-white border border-brand-border text-brand-text rounded-[10px] px-[16px] py-[10px] font-bold text-[13px] focus:outline-none focus:border-brand-secondary cursor-pointer">
+            className="flex-1 sm:flex-initial bg-white border border-brand-border text-brand-text rounded-[10px] px-[14px] sm:px-[16px] py-[10px] font-bold text-[13px] focus:outline-none focus:border-brand-secondary cursor-pointer">
             {courses.map((c) => (
               <option key={c.jadwal_id} value={c.jadwal_id}>
                 {c.mata_kuliah.kode_mk} - {c.mata_kuliah.nama_mk}
@@ -98,7 +98,7 @@ export default function DosenReport() {
             ))}
           </select>
           <button onClick={handleExport} disabled={exporting}
-            className="bg-white border border-brand-border hover:bg-slate-50 text-brand-primary font-bold text-[13px] tracking-[0.6px] px-[20px] py-[10px] rounded-[10px] shadow-sm transition-all flex items-center gap-[8px] cursor-pointer shrink-0">
+            className="bg-white border border-brand-border hover:bg-slate-50 text-brand-primary font-bold text-[12px] sm:text-[13px] tracking-[0.6px] px-[16px] sm:px-[20px] py-[10px] rounded-[10px] shadow-sm transition-all flex items-center justify-center gap-[8px] cursor-pointer shrink-0">
             {exporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
             <span>Export CSV</span>
           </button>
@@ -107,41 +107,41 @@ export default function DosenReport() {
 
       {report && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] w-full">
-            <div className="bg-white border border-brand-border rounded-[16px] p-[24px] flex flex-col gap-[12px] shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[16px] sm:gap-[24px] w-full">
+            <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[24px] flex flex-col gap-[10px] sm:gap-[12px] shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">Course</span>
                 <div className="p-2 bg-slate-100 rounded-[8px] text-brand-primary"><BookOpen size={16} /></div>
               </div>
-              <div className="flex items-baseline gap-[8px]">
-                <span className="font-extrabold text-brand-primary text-[36px] leading-none">{report.course.kode_mk}</span>
-                <span className="text-brand-text-dim text-[13px] font-semibold">{report.course.nama_mk}</span>
+              <div className="flex flex-col sm:flex-row sm:items-baseline gap-[4px] sm:gap-[8px] min-w-0">
+                <span className="font-extrabold text-brand-primary text-[28px] sm:text-[36px] leading-none shrink-0">{report.course.kode_mk}</span>
+                <span className="text-brand-text-dim text-[13px] font-semibold truncate">{report.course.nama_mk}</span>
               </div>
             </div>
-            <div className="bg-white border border-brand-border rounded-[16px] p-[24px] flex flex-col gap-[12px] shadow-sm">
+            <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[24px] flex flex-col gap-[10px] sm:gap-[12px] shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">Attendance Rate</span>
                 <div className="p-2 bg-slate-100 rounded-[8px] text-brand-primary"><TrendingUp size={16} /></div>
               </div>
               <div className="flex items-baseline gap-[8px]">
-                <span className="font-extrabold text-brand-primary text-[36px] leading-none">{report.overall_attendance_rate}%</span>
+                <span className="font-extrabold text-brand-primary text-[28px] sm:text-[36px] leading-none">{report.overall_attendance_rate}%</span>
               </div>
             </div>
-            <div className="bg-white border border-brand-border rounded-[16px] p-[24px] flex flex-col gap-[12px] shadow-sm">
+            <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[24px] flex flex-col gap-[10px] sm:gap-[12px] shadow-sm sm:col-span-2 lg:col-span-1">
               <div className="flex items-center justify-between">
                 <span className="text-brand-text-dim text-[11px] font-bold tracking-[0.5px] uppercase">Total Sessions</span>
                 <div className="p-2 bg-slate-100 rounded-[8px] text-brand-primary"><Clock size={16} /></div>
               </div>
               <div className="flex items-baseline gap-[8px]">
-                <span className="font-extrabold text-brand-primary text-[36px] leading-none">{report.total_sessions}</span>
+                <span className="font-extrabold text-brand-primary text-[28px] sm:text-[36px] leading-none">{report.total_sessions}</span>
                 <span className="text-brand-text-dim text-[13px] font-semibold">{report.total_students} students</span>
               </div>
             </div>
           </div>
 
           <div className="bg-white border border-brand-border rounded-[16px] shadow-sm overflow-hidden flex flex-col w-full">
-            <div className="p-[20px] border-b border-brand-border bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h3 className="font-bold text-brand-primary text-[18px]">Course Management History</h3>
+            <div className="p-[16px] sm:p-[20px] border-b border-brand-border bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h3 className="font-bold text-brand-primary text-[16px] sm:text-[18px]">Course Management History</h3>
               <div className="relative w-full sm:w-[240px]">
                 <Search className="absolute left-[12px] top-1/2 -translate-y-1/2 text-brand-text-dim" size={16} />
                 <input type="text" placeholder="Search code or title..." value={searchQuery}
@@ -149,7 +149,41 @@ export default function DosenReport() {
                   className="w-full bg-white border border-brand-border text-brand-text placeholder-brand-text-dim/60 rounded-[8px] pl-[36px] pr-[12px] py-[8px] text-[13px] focus:outline-none focus:border-brand-secondary" />
               </div>
             </div>
-            <div className="w-full overflow-x-auto">
+
+            {/* Below md: Mobile Card Layout */}
+            <div className="md:hidden flex flex-col gap-[10px] p-[12px] bg-slate-50/20">
+              {report.students.length > 0 ? report.students.map((s: any) => (
+                <div key={s.nim} className="bg-white border border-brand-border/60 rounded-[12px] p-[14px] flex flex-col gap-[8px] shadow-sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap">{s.nama}</span>
+                    <span className="font-extrabold text-[14px] text-brand-primary shrink-0">{s.rate}%</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[12px] text-brand-text-dim border-t border-brand-border/30 pt-1.5">
+                    <div><span className="font-semibold text-brand-text">NIM:</span> <span className="font-mono">{s.nim}</span></div>
+                    <div><span className="font-semibold text-brand-text">GPA:</span> {s.gpa}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-[11px] text-center bg-slate-50 rounded-[8px] p-2 border border-brand-border/20 mt-1">
+                    <div>
+                      <span className="text-brand-text-dim block text-[10px] uppercase font-bold">Present</span>
+                      <span className="text-emerald-600 font-extrabold text-[13px]">{s.attendance.present}</span>
+                    </div>
+                    <div>
+                      <span className="text-brand-text-dim block text-[10px] uppercase font-bold">Absent</span>
+                      <span className="text-red-600 font-extrabold text-[13px]">{s.attendance.absent}</span>
+                    </div>
+                    <div>
+                      <span className="text-brand-text-dim block text-[10px] uppercase font-bold">Excused</span>
+                      <span className="text-amber-600 font-extrabold text-[13px]">{s.attendance.excused}</span>
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="p-8 text-center text-brand-text-dim italic bg-white rounded-[12px] border border-brand-border/40">No student records found.</div>
+              )}
+            </div>
+
+            {/* md and above: Table */}
+            <div className="hidden md:block w-full overflow-x-auto">
               <table className="w-full border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-50 border-b border-brand-border text-brand-text-dim text-[11px] font-bold uppercase tracking-[1px]">
@@ -165,13 +199,15 @@ export default function DosenReport() {
                 <tbody>
                   {report.students.map((s: any, idx: number) => (
                     <tr key={s.nim} className={cn("border-b border-brand-border/40 hover:bg-slate-50/50 transition-colors", idx % 2 === 1 ? "bg-slate-50/20" : "bg-white")}>
-                      <td className="px-[24px] py-[16px]"><span className="font-bold text-[14px] text-brand-primary">{s.nama}</span></td>
-                      <td className="px-[24px] py-[16px] font-mono text-brand-text-dim text-[13px]">{s.nim}</td>
-                      <td className="px-[24px] py-[16px] text-brand-text text-[13px]">{s.gpa}</td>
-                      <td className="px-[24px] py-[16px] text-emerald-600 font-bold">{s.attendance.present}</td>
-                      <td className="px-[24px] py-[16px] text-red-600 font-bold">{s.attendance.absent}</td>
-                      <td className="px-[24px] py-[16px] text-amber-600 font-bold">{s.attendance.excused}</td>
-                      <td className="px-[24px] py-[16px] font-extrabold text-brand-primary">{s.rate}%</td>
+                      <td className="px-[24px] py-[16px]">
+                        <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap block max-w-[180px] xl:max-w-[260px]">{s.nama}</span>
+                      </td>
+                      <td className="px-[24px] py-[16px] font-mono text-brand-text-dim text-[13px] whitespace-nowrap">{s.nim}</td>
+                      <td className="px-[24px] py-[16px] text-brand-text text-[13px] whitespace-nowrap">{s.gpa}</td>
+                      <td className="px-[24px] py-[16px] text-emerald-600 font-bold whitespace-nowrap">{s.attendance.present}</td>
+                      <td className="px-[24px] py-[16px] text-red-600 font-bold whitespace-nowrap">{s.attendance.absent}</td>
+                      <td className="px-[24px] py-[16px] text-amber-600 font-bold whitespace-nowrap">{s.attendance.excused}</td>
+                      <td className="px-[24px] py-[16px] font-extrabold text-brand-primary whitespace-nowrap">{s.rate}%</td>
                     </tr>
                   ))}
                 </tbody>
