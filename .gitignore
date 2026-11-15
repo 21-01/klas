@@ -18,4 +18,5 @@ supabase/scripts/create-auth-users.ps1
 screenshots-verify/
 .openchamber/
 
-docs/assets/*.png
+# rendered svg previews (screenshots/ subdir is committed — used by readme-header.svg)
+docs/assets/readme-header.png
