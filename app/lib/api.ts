@@ -1,8 +1,8 @@
 import { getAccessToken } from "./auth";
 
 // ─── Profile Cache ─────────────────────────────────────
-let profileCache: { data: any; expiry: number } | null = null;
-const PROFILE_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+let profileCache: { token: string; data: any; expiry: number } | null = null;
+const PROFILE_CACHE_TTL = 60 * 1000; // 1 minute
 
 export function clearProfileCache() {
   profileCache = null;
@@ -74,12 +74,13 @@ export const api = {
 
   // ─── Mahasiswa ──────────────────────────────────────
   async getMyProfile() {
+    const token = await getAccessToken();
     const now = Date.now();
-    if (profileCache && now < profileCache.expiry) {
+    if (profileCache && profileCache.token === (token ?? "") && now < profileCache.expiry) {
       return profileCache.data as ProfileResponse;
     }
     const data = await invoke<ProfileResponse>("get-my-profile");
-    profileCache = { data, expiry: now + PROFILE_CACHE_TTL };
+    profileCache = { token: token ?? "", data, expiry: now + PROFILE_CACHE_TTL };
     return data;
   },
   getMyDashboard() {
