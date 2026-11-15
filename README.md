@@ -1,8 +1,10 @@
-# KLAS — Geospatial Presence Verification System
+# KLAS - Geospatial Presence Verification System
 
-![KLAS logo](/public/logo.svg)
+![KLAS — admin dashboard on desktop, student app on mobile](docs/assets/readme-header.svg)
 
 KLAS is a web-based student attendance verification system designed to replace conventional, manual attendance methods with a secure, automated, and tamper-proof verification mechanism.
+
+> Regenerate the header after brand or layout changes: `node scripts/generate-readme-header.mjs` (preview it headlessly with `node scripts/render-svg-preview.mjs`).
 
 ## Quick Start
 
