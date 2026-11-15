@@ -70,6 +70,11 @@ for (const role of Object.keys(roleRoutes)) {
   await page.click("button.w-full");
   await page.waitForTimeout(1500);
 
+  // One authenticated request warms the JWT cache before the sweep, so the
+  // per-route 401s seen during the first visit after login are not counted.
+  await page.goto(roleRoutes[role][0], { waitUntil: "networkidle", timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+
   for (const route of roleRoutes[role]) {
     for (const vp of viewports) {
       await page.setViewportSize({ width: vp.width, height: vp.height });
