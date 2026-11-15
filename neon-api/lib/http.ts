@@ -16,6 +16,16 @@ export const forbidden = (m = "Forbidden: insufficient role") => new HttpError(4
 export const notFound = (m = "Not found") => new HttpError(404, m);
 export const conflict = (m = "Conflict") => new HttpError(409, m);
 
+/**
+ * Throws 403 when KLAS_DEMO_MODE is enabled. Wrap destructive endpoints with
+ * this so public demonstrations cannot wipe seed data.
+ */
+export function assertMutable(what = "This action"): void {
+  if (env.demoMode) {
+    throw forbidden(`${what} is disabled in demo mode (KLAS_DEMO_MODE)`);
+  }
+}
+
 function resolveOrigin(c: Context): string {
   const origin = c.req.header("origin");
   const allowed = env.corsOrigins;

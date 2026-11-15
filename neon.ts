@@ -17,6 +17,9 @@ export default defineConfig({
         NEON_REALTIME_URL: { value: process.env.NEON_REALTIME_URL, required: true },
         // Comma-separated browser origins allowed to call the API.
         KLAS_CORS_ORIGINS: { value: process.env.KLAS_CORS_ORIGINS, required: false },
+        // Demo mode: set to "true" during public presentations to disable
+        // destructive endpoints (admin deletes, session deletion).
+        KLAS_DEMO_MODE: { value: process.env.KLAS_DEMO_MODE, required: false },
         // Bucket used for report exports.
         KLAS_REPORT_BUCKET: { value: process.env.KLAS_REPORT_BUCKET ?? "assets", required: false },
       },

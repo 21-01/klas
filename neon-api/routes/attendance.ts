@@ -9,6 +9,7 @@ import {
   forbidden,
   notFound,
   ok,
+  assertMutable,
 } from "../lib/http.ts";
 import {
   currentUser,
@@ -706,6 +707,7 @@ app.post("/delete-session", async (c) => {
   const body = parseBody(sessionIdSchema, await readJson(c));
 
   await assertSessionAccess(user, body.sesi_id);
+  assertMutable("Deleting sessions");
 
   await transaction(async (client) => {
     await client.query(`delete from presensi where sesi_id = $1`, [body.sesi_id]);

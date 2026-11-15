@@ -2,7 +2,7 @@ import { Hono, type Context } from "hono";
 import { z } from "zod";
 import { uuid as uuidSchema } from "../lib/ids.ts";
 import { many, one, run, transaction, isUniqueViolation } from "../lib/db.ts";
-import { badRequest, conflict, notFound, ok, text } from "../lib/http.ts";
+import { badRequest, conflict, notFound, ok, text, assertMutable } from "../lib/http.ts";
 import { getClientIp, requireAdmin, type AppUser } from "../lib/auth.ts";
 import { audit, type AuditCategory } from "../lib/audit.ts";
 import { lastNDates, paginate, round2, toCsv } from "../lib/util.ts";
@@ -975,6 +975,7 @@ app.post("/crud-mahasiswa", async (c) => {
   );
   if (!existing) throw notFound("Mahasiswa not found");
 
+  assertMutable("Deleting students");
   await run(`update mahasiswa set is_active = false where mahasiswa_id = $1`, [data.mahasiswa_id]);
   await logAudit(
     c,
@@ -1177,6 +1178,7 @@ app.post("/crud-dosen", async (c) => {
   const existing = await one<{ nama: string }>(`select nama from dosen where dosen_id = $1`, [data.dosen_id]);
   if (!existing) throw notFound("Dosen not found");
 
+  assertMutable("Deleting lecturers");
   await run(`update dosen set is_active = false where dosen_id = $1`, [data.dosen_id]);
   await logAudit(c, user, "Master Data", `Soft-deleted dosen ${existing.nama} (${data.dosen_id})`);
   return ok(c, { message: "Dosen deactivated successfully" });
@@ -1291,6 +1293,7 @@ app.post("/crud-mata-kuliah", async (c) => {
   const existing = await one<{ mk_id: string }>(`select mk_id from mata_kuliah where mk_id = $1`, [data.mk_id]);
   if (!existing) throw notFound("Mata kuliah not found");
 
+  assertMutable("Deleting courses");
   try {
     await run(`delete from mata_kuliah where mk_id = $1`, [data.mk_id]);
   } catch (error) {
@@ -1470,6 +1473,7 @@ app.post("/crud-jadwal", async (c) => {
     );
     if (!existing) throw notFound("Jadwal not found");
 
+    assertMutable("Deleting schedules");
     await run(`update jadwal_kelas set is_active = false where jadwal_id = $1`, [data.jadwal_id]);
     await logAudit(c, user, "Schedule Plotting", `Deleted (soft) jadwal ${data.jadwal_id}`);
     return ok(c, { message: "Jadwal deactivated successfully" });
@@ -1500,6 +1504,7 @@ app.post("/crud-jadwal", async (c) => {
   );
 
   if (existing) {
+    assertMutable("Unenrolling students");
     await run(`delete from pendaftaran_kelas where pendaftaran_id = $1`, [existing.pendaftaran_id]);
     await logAudit(
       c,
@@ -1647,6 +1652,7 @@ app.post("/crud-ruangan", async (c) => {
   );
   if (!existing) throw notFound("Ruangan not found");
 
+  assertMutable("Deleting rooms");
   await run(`update ruangan set is_active = false where ruangan_id = $1`, [data.ruangan_id]);
   await logAudit(
     c,
@@ -1756,6 +1762,7 @@ app.post("/crud-prodi", async (c) => {
   ]);
   if (!existing) throw notFound("Program studi not found");
 
+  assertMutable("Deleting program studi");
   await run(`delete from program_studi where prodi_id = $1`, [prodi_id]);
   await logAudit(c, user, "Master Data", `Deleted program studi (ID: ${prodi_id})`);
   return ok(c, { message: "Program studi deleted" });

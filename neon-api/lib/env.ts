@@ -60,4 +60,17 @@ export const env = {
   get isProduction() {
     return process.env.NODE_ENV === "production";
   },
+  /**
+   * Demo mode: softens destructive behaviour for public presentations.
+   * Enabled by setting KLAS_DEMO_MODE=true (or 1) in the Function environment.
+   *
+   * Effects (enforced by `assertMutable` in lib/http.ts):
+   *  - Admin CRUD delete/deactivate actions are rejected (seed data survives).
+   *  - Hard deletes of attendance sessions are rejected.
+   *  - Dosen/admin edits and creates stay allowed so demos stay interactive.
+   */
+  get demoMode() {
+    const value = process.env.KLAS_DEMO_MODE;
+    return value === "true" || value === "1";
+  },
 };
