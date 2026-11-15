@@ -208,21 +208,20 @@ export default function AdminMasterData() {
   }
 
   return (
-    <div className="flex flex-col gap-[32px] w-full">
+    <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[32px] w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 w-full pb-2 border-b border-brand-border/40">
         <div className="flex flex-col items-start gap-[4px]">
-          <span className="font-semibold text-brand-text-dim text-[11px] tracking-[1.2px] uppercase">MASTER REGISTRY</span>
-          <h1 className="font-bold text-brand-primary text-[32px] tracking-[-0.64px] leading-tight">Master Data Management</h1>
+          <h1 className="font-bold text-brand-primary text-[22px] sm:text-[26px] lg:text-[32px] tracking-[-0.4px] sm:tracking-[-0.64px] leading-tight">Master Data Management</h1>
         </div>
       </div>
 
       <div className="bg-white border border-brand-border rounded-[16px] shadow-sm flex flex-col w-full">
         <div className="overflow-hidden rounded-t-[16px]">
           <div className="border-b border-brand-border">
-            <div className="flex bg-slate-50/50">
+            <div className="flex bg-slate-50/50 overflow-x-auto">
               {(["mahasiswa", "dosen", "matakuliah"] as const).map((tab) => (
                 <button key={tab} onClick={() => handleTabChange(tab)}
-                  className={cn("px-[32px] py-[16px] font-bold text-[13px] uppercase tracking-[0.5px] border-b-2 transition-all cursor-pointer",
+                  className={cn("px-[20px] sm:px-[32px] py-[14px] sm:py-[16px] font-bold text-[12px] sm:text-[13px] uppercase tracking-[0.5px] border-b-2 transition-all cursor-pointer whitespace-nowrap",
                     activeTab === tab ? "border-brand-primary text-brand-primary bg-white" : "border-transparent text-brand-text-dim hover:text-brand-text")}>
                   {tab === "mahasiswa" ? "Students" : tab === "dosen" ? "Lecturers" : "Courses"}
                 </button>
@@ -231,16 +230,16 @@ export default function AdminMasterData() {
           </div>
         </div>
 
-        <div className="p-[20px] border-b border-brand-border bg-slate-50/20 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-[12px] w-full xl:w-auto">
-            <div className="relative w-full sm:w-[240px]">
+        <div className="p-[16px] sm:p-[20px] border-b border-brand-border bg-slate-50/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-[10px] sm:gap-[12px] flex-1 min-w-0">
+            <div className="relative flex-1 sm:max-w-[280px]">
               <Search className="absolute left-[12px] top-1/2 -translate-y-1/2 text-brand-text-dim" size={16} />
               <input type="text" placeholder={`Search ${activeTab === "mahasiswa" ? "name or NIM" : activeTab === "dosen" ? "name or NIDN" : "title or code"}...`}
                 value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white border border-brand-border text-brand-text placeholder-brand-text-dim/60 rounded-[8px] pl-[36px] pr-[12px] py-[8px] text-[13px] focus:outline-none focus:border-brand-secondary" />
             </div>
 
-            <div className="relative">
+            <div className="relative shrink-0">
               <button onClick={() => setShowFilterCard(!showFilterCard)}
                 className={cn("border border-brand-border text-brand-text font-bold text-[13px] px-[16px] py-[8px] rounded-[8px] transition-all flex items-center gap-[8px] cursor-pointer bg-white hover:bg-slate-50",
                   showFilterCard && "border-brand-secondary bg-slate-50")}>
@@ -299,14 +298,86 @@ export default function AdminMasterData() {
           </div>
 
           <button onClick={() => { resetForm(); setShowAddModal(true); }}
-            className="bg-brand-secondary hover:bg-brand-primary text-white font-bold text-[12px] tracking-[0.5px] uppercase px-[20px] py-[10px] rounded-[8px] transition-all flex items-center gap-[8px] shadow-sm cursor-pointer shrink-0">
+            aria-label={`Add New ${activeTab === "mahasiswa" ? "Student" : activeTab === "dosen" ? "Lecturer" : "Course"}`}
+            title={`Add New ${activeTab === "mahasiswa" ? "Student" : activeTab === "dosen" ? "Lecturer" : "Course"}`}
+            className="bg-brand-secondary hover:bg-brand-primary text-white font-bold text-[12px] tracking-[0.5px] uppercase px-[14px] xl:px-[20px] py-[10px] rounded-[8px] transition-all flex items-center justify-center gap-[8px] shadow-sm cursor-pointer shrink-0 self-start sm:self-auto">
             <Plus size={16} />
-            <span>Add New {activeTab === "mahasiswa" ? "Student" : activeTab === "dosen" ? "Lecturer" : "Course"}</span>
+            <span className="hidden xl:inline">Add New {activeTab === "mahasiswa" ? "Student" : activeTab === "dosen" ? "Lecturer" : "Course"}</span>
           </button>
         </div>
 
         <div className="w-full overflow-hidden rounded-b-[16px]">
-          <div className="overflow-x-auto">
+          {/* Below md: Card pattern */}
+          <div className="md:hidden flex flex-col gap-[10px] p-[12px] bg-slate-50/20">
+            {filteredData.length > 0 ? filteredData.map((row: any, idx: number) => (
+              <div key={row.mahasiswa_id || row.dosen_id || row.mk_id || idx}
+                className="bg-white border border-brand-border/60 rounded-[12px] p-[14px] flex flex-col gap-[10px] shadow-sm">
+                <div className="flex items-center justify-between gap-[8px]">
+                  <div className="flex items-center gap-[10px] min-w-0">
+                    <div className={cn("size-[32px] text-[12px] font-extrabold flex items-center justify-center rounded-[8px] shrink-0 border",
+                      activeTab === "dosen" ? "bg-brand-secondary/10 border-brand-secondary/20 text-brand-secondary" : "bg-slate-100 border-brand-border/60 text-brand-primary")}>
+                      {renderInitials(activeTab === "matakuliah" ? row.nama_mk : row.nama)}
+                    </div>
+                    <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap">
+                      {activeTab === "matakuliah" ? row.nama_mk : row.nama}
+                    </span>
+                  </div>
+                  <button onClick={() => toggleStatus(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
+                    className={cn("text-[10px] font-bold px-[8px] py-[3px] rounded-full uppercase tracking-[0.5px] border cursor-pointer shrink-0",
+                      row.is_active !== false ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200")}>
+                    {row.is_active !== false ? "Active" : "Inactive"}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[12px] text-brand-text-dim pt-2 border-t border-brand-border/30">
+                  {activeTab === "mahasiswa" && (
+                    <>
+                      <div><span className="font-semibold text-brand-text">NIM:</span> <span className="font-mono">{row.nim}</span></div>
+                      <div><span className="font-semibold text-brand-text">Year:</span> {row.angkatan}</div>
+                      <div className="col-span-2 truncate"><span className="font-semibold text-brand-text">Prodi:</span> {row.program_studi?.nama_prodi || prodiMap[row.prodi_id] || row.prodi_id}</div>
+                      <div><span className="font-semibold text-brand-text">Gender:</span> {row.jenis_kelamin === "L" ? "Male" : "Female"}</div>
+                    </>
+                  )}
+                  {activeTab === "dosen" && (
+                    <>
+                      <div className="col-span-2"><span className="font-semibold text-brand-text">NIP/NIDN:</span> <span className="font-mono">{row.nip || row.nidn || "-"}</span></div>
+                      <div className="col-span-2 truncate"><span className="font-semibold text-brand-text">Prodi:</span> {row.program_studi?.nama_prodi || prodiMap[row.prodi_id] || row.prodi_id}</div>
+                      <div><span className="font-semibold text-brand-text">Gender:</span> {row.jenis_kelamin === "L" ? "Male" : "Female"}</div>
+                    </>
+                  )}
+                  {activeTab === "matakuliah" && (
+                    <>
+                      <div><span className="font-semibold text-brand-text">Code:</span> <span className="font-mono">{row.kode_mk}</span></div>
+                      <div><span className="font-semibold text-brand-text">SKS:</span> {row.sks} SKS</div>
+                    </>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-end gap-[8px] pt-1 border-t border-brand-border/30">
+                  <button onClick={() => handleEditClick(row.mahasiswa_id || row.dosen_id || row.mk_id)}
+                    className="p-1.5 text-brand-text-dim hover:text-brand-text hover:bg-slate-100 rounded-[6px] transition-colors cursor-pointer flex items-center gap-1 text-[12px]">
+                    <Edit2 size={14} /><span>Edit</span>
+                  </button>
+                  {row.is_active === false ? (
+                    <button onClick={() => toggleStatus(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
+                      className="p-1.5 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-[6px] transition-colors cursor-pointer flex items-center gap-1 text-[12px]">
+                      <RotateCcw size={14} /><span>Activate</span>
+                    </button>
+                  ) : (
+                    <button onClick={() => handleDelete(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
+                      className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-[6px] transition-colors cursor-pointer flex items-center gap-1 text-[12px]">
+                      <Trash2 size={14} /><span>Delete</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )) : (
+              <div className="p-8 text-center text-brand-text-dim italic bg-white rounded-[12px] border border-brand-border/40">No records found.</div>
+            )}
+          </div>
+
+          {/* md and above: Table */}
+          <div className="hidden md:block overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-slate-50 border-b border-brand-border text-brand-text-dim text-[11px] font-bold uppercase tracking-[1px]">
@@ -323,18 +394,18 @@ export default function AdminMasterData() {
                   {activeTab === "mahasiswa" && (
                     <>
                       <td className="px-[24px] py-[16px]">
-                        <div className="flex items-center gap-[12px]">
+                        <div className="flex items-center gap-[12px] min-w-0">
                           <div className="size-[32px] bg-slate-100 border border-brand-border/60 text-brand-primary text-[12px] font-extrabold flex items-center justify-center rounded-[8px] shrink-0">
                             {renderInitials(row.nama)}
                           </div>
-                          <span className="font-bold text-[14px] text-brand-primary">{row.nama}</span>
+                          <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap max-w-[200px] xl:max-w-[300px]">{row.nama}</span>
                         </div>
                       </td>
-                      <td className="font-mono text-[13px] text-brand-text-dim px-[24px]">{row.nim}</td>
-                      <td className="text-brand-text-dim text-[13px] px-[24px]">{row.program_studi?.nama_prodi || prodiMap[row.prodi_id] || row.prodi_id}</td>
-                      <td className="text-brand-text font-semibold text-[13px] px-[24px]">{row.angkatan}</td>
-                      <td className="text-brand-text-dim text-[13px] px-[24px]">{row.jenis_kelamin === "L" ? "Male" : "Female"}</td>
-                      <td className="px-[24px]">
+                      <td className="font-mono text-[13px] text-brand-text-dim px-[24px] whitespace-nowrap">{row.nim}</td>
+                      <td className="text-brand-text-dim text-[13px] px-[24px] whitespace-nowrap">{row.program_studi?.nama_prodi || prodiMap[row.prodi_id] || row.prodi_id}</td>
+                      <td className="text-brand-text font-semibold text-[13px] px-[24px] whitespace-nowrap">{row.angkatan}</td>
+                      <td className="text-brand-text-dim text-[13px] px-[24px] whitespace-nowrap">{row.jenis_kelamin === "L" ? "Male" : "Female"}</td>
+                      <td className="px-[24px] whitespace-nowrap">
                         <button onClick={() => toggleStatus(row.mahasiswa_id, "student")}
                           className={cn("text-[10px] font-bold px-[10px] py-[4px] rounded-full uppercase tracking-[0.5px] border cursor-pointer",
                             row.is_active !== false ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200")}>
@@ -346,15 +417,15 @@ export default function AdminMasterData() {
                   {activeTab === "dosen" && (
                     <>
                       <td className="px-[24px] py-[16px]">
-                        <div className="flex items-center gap-[12px]">
+                        <div className="flex items-center gap-[12px] min-w-0">
                           <div className="size-[32px] bg-brand-secondary/10 border border-brand-secondary/20 text-brand-secondary text-[12px] font-extrabold flex items-center justify-center rounded-[8px] shrink-0">{renderInitials(row.nama)}</div>
-                          <span className="font-bold text-[14px] text-brand-primary">{row.nama}</span>
+                          <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap max-w-[200px] xl:max-w-[300px]">{row.nama}</span>
                         </div>
                       </td>
-                      <td className="font-mono text-[13px] text-brand-text-dim px-[24px]">{row.nip || row.nidn || "-"}</td>
-                      <td className="text-brand-text-dim text-[13px] px-[24px]">{row.program_studi?.nama_prodi || prodiMap[row.prodi_id] || row.prodi_id}</td>
-                      <td className="text-brand-text-dim text-[13px] px-[24px]">{row.jenis_kelamin === "L" ? "Male" : "Female"}</td>
-                      <td className="px-[24px]">
+                      <td className="font-mono text-[13px] text-brand-text-dim px-[24px] whitespace-nowrap">{row.nip || row.nidn || "-"}</td>
+                      <td className="text-brand-text-dim text-[13px] px-[24px] whitespace-nowrap">{row.program_studi?.nama_prodi || prodiMap[row.prodi_id] || row.prodi_id}</td>
+                      <td className="text-brand-text-dim text-[13px] px-[24px] whitespace-nowrap">{row.jenis_kelamin === "L" ? "Male" : "Female"}</td>
+                      <td className="px-[24px] whitespace-nowrap">
                         <button onClick={() => toggleStatus(row.dosen_id, "lecturer")}
                           className={cn("text-[10px] font-bold px-[10px] py-[4px] rounded-full uppercase tracking-[0.5px] border cursor-pointer",
                             row.is_active !== false ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200")}>
@@ -365,10 +436,12 @@ export default function AdminMasterData() {
                   )}
                   {activeTab === "matakuliah" && (
                     <>
-                      <td className="px-[24px] py-[16px]"><span className="font-bold text-[14px] text-brand-primary">{row.nama_mk}</span></td>
-                      <td className="font-mono text-[13px] text-brand-text-dim px-[24px]">{row.kode_mk}</td>
-                      <td className="text-brand-text-dim text-[13px] px-[24px]">{row.sks} SKS</td>
-                      <td className="px-[24px]">
+                      <td className="px-[24px] py-[16px]">
+                        <span className="font-bold text-[14px] text-brand-primary truncate whitespace-nowrap max-w-[200px] xl:max-w-[300px] block">{row.nama_mk}</span>
+                      </td>
+                      <td className="font-mono text-[13px] text-brand-text-dim px-[24px] whitespace-nowrap">{row.kode_mk}</td>
+                      <td className="text-brand-text-dim text-[13px] px-[24px] whitespace-nowrap">{row.sks} SKS</td>
+                      <td className="px-[24px] whitespace-nowrap">
                         <button onClick={() => toggleStatus(row.mk_id, "course")}
                           className={cn("text-[10px] font-bold px-[10px] py-[4px] rounded-full uppercase tracking-[0.5px] border cursor-pointer",
                             row.is_active !== false ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200")}>

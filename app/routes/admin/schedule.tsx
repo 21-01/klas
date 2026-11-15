@@ -123,6 +123,8 @@ export default function AdminSchedule() {
   const unassignedSlots = schedule.filter((x) => x.status === "unassigned").length;
   const roomMissingSlots = schedule.filter((x) => x.status === "room-missing").length;
 
+  const formatHHMM = (t?: string) => (t && t.length >= 5 ? t.substring(0, 5) : t || "");
+
   const handleDropdownClick = (type: "lecturer" | "room", jadwalId: string, e: React.MouseEvent) => {
     if (dropdownInfo?.jadwalId === jadwalId && dropdownInfo?.type === type) {
       setDropdownInfo(null);
@@ -165,17 +167,16 @@ export default function AdminSchedule() {
   }
 
   return (
-    <div className="flex flex-col gap-[32px] w-full">
+    <div className="flex flex-col gap-[20px] sm:gap-[24px] lg:gap-[32px] w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 w-full pb-2 border-b border-brand-border/40">
         <div className="flex flex-col items-start gap-[4px]">
-          <span className="font-semibold text-brand-text-dim text-[11px] tracking-[1.2px] uppercase">CURRICULUM PLANNING</span>
-          <h1 className="font-bold text-brand-primary text-[32px] tracking-[-0.64px] leading-tight">Course Schedule Plotting</h1>
+          <h1 className="font-bold text-brand-primary text-[22px] sm:text-[26px] lg:text-[32px] tracking-[-0.4px] sm:tracking-[-0.64px] leading-tight">Course Schedule Plotting</h1>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-[24px] w-full items-start">
-        <div className="lg:col-span-9 bg-white border border-brand-border rounded-[16px] shadow-sm overflow-hidden flex flex-col w-full">
-          <div className="p-[20px] border-b border-brand-border bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col xl:grid xl:grid-cols-12 gap-[20px] xl:gap-[24px] w-full items-start">
+        <div className="xl:col-span-9 order-2 xl:order-1 bg-white border border-brand-border rounded-[16px] shadow-sm overflow-hidden flex flex-col w-full">
+          <div className="p-[16px] sm:p-[20px] border-b border-brand-border bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-[12px] w-full md:w-auto">
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-bold text-brand-text-dim uppercase tracking-[0.5px]">Semester</span>
@@ -194,7 +195,120 @@ export default function AdminSchedule() {
             </div>
           </div>
 
-          <div className="w-full overflow-x-auto">
+          {/* Below md: Mobile Card Layout */}
+          <div className="md:hidden flex flex-col gap-[10px] p-[12px] bg-slate-50/20">
+            {filteredSchedule.length > 0 ? filteredSchedule.map((item) => (
+              <div key={item.jadwal_id} className="bg-white border border-brand-border/60 rounded-[12px] p-[14px] flex flex-col gap-[10px] shadow-sm">
+                <div className="flex items-start justify-between gap-[8px]">
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-[14px] text-brand-primary leading-tight truncate whitespace-nowrap">{item.mata_kuliah?.nama_mk}</span>
+                    <span className="font-mono text-brand-text-dim text-[11px] uppercase mt-0.5">{item.mata_kuliah?.kode_mk} &bull; {item.mata_kuliah?.sks} SKS</span>
+                  </div>
+                  <div>
+                    {item.status === "assigned" && <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-[8px] py-[3px] rounded-full uppercase tracking-[0.5px]">Assigned</span>}
+                    {item.status === "unassigned" && <span className="bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold px-[8px] py-[3px] rounded-full uppercase tracking-[0.5px]">Lec Missing</span>}
+                    {item.status === "room-missing" && <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold px-[8px] py-[3px] rounded-full uppercase tracking-[0.5px]">Room Missing</span>}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5 text-[12px] text-brand-text-dim pt-2 border-t border-brand-border/30">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-brand-text">Time:</span>
+                    <span className="flex items-center gap-1 font-medium text-brand-primary">
+                      <Clock size={12} className="text-slate-400" />
+                      {item.hari}, {formatHHMM(item.waktu_mulai)} - {formatHHMM(item.waktu_selesai)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-brand-text">Lecturer:</span>
+                    <div className="flex items-center gap-[4px] min-w-0">
+                      <span className="font-bold text-brand-text truncate max-w-[140px] whitespace-nowrap">{item.dosen?.nama || "Unassigned"}</span>
+                      <button onClick={(e) => handleDropdownClick("lecturer", item.jadwal_id, e)}
+                        className="p-1 hover:bg-slate-100 rounded text-brand-text-dim hover:text-brand-text cursor-pointer"><ChevronDown size={14} /></button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-brand-text">Room:</span>
+                    <div className="flex items-center gap-[4px] min-w-0">
+                      <span className="font-semibold text-brand-text truncate max-w-[140px] whitespace-nowrap">{item.ruangan?.nama_ruangan || "Unassigned"}</span>
+                      <button onClick={(e) => handleDropdownClick("room", item.jadwal_id, e)}
+                        className="p-1 hover:bg-slate-100 rounded text-brand-text-dim hover:text-brand-text cursor-pointer"><ChevronDown size={14} /></button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-1 border-t border-brand-border/20">
+                    <span className="font-semibold text-brand-text">Students:</span>
+                    <button onClick={() => handleToggleExpand(item.jadwal_id)}
+                      className="flex items-center gap-[6px] font-semibold text-brand-text hover:text-brand-primary cursor-pointer">
+                      <Users size={14} className="text-slate-400" />
+                      <span>{enrolledCounts[item.jadwal_id] ?? "—"} Enrolled</span>
+                      <ChevronDown size={12} className={cn("text-brand-text-dim transition-transform", expandedJadwalId === item.jadwal_id && "rotate-180")} />
+                    </button>
+                  </div>
+                </div>
+
+                {expandedJadwalId === item.jadwal_id && (
+                  <div className="pt-2 border-t border-brand-border/40 flex flex-col gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-brand-primary text-[12px]">Enrolled Students</span>
+                        <span className="text-[11px] text-brand-text-dim">{enrolledStudents.length} students</span>
+                      </div>
+                      {enrolledLoading ? (
+                        <div className="flex items-center justify-center py-2"><Loader2 className="animate-spin text-brand-secondary" size={16} /></div>
+                      ) : (
+                        <div className="flex flex-col gap-1 max-h-[140px] overflow-y-auto">
+                          {enrolledStudents.length > 0 ? enrolledStudents.map((e: any) => (
+                            <div key={e.pendaftaran_id} className="flex items-center justify-between text-[11px] p-1.5 bg-slate-50 rounded">
+                              <span className="truncate max-w-[180px] font-medium">{e.mahasiswa?.nama}</span>
+                              <button onClick={() => handleToggleEnroll(item.jadwal_id, e.mahasiswa_id)} className="text-red-500 hover:text-red-700 cursor-pointer p-1" title="Unenroll">
+                                <UserMinus size={13} />
+                              </button>
+                            </div>
+                          )) : (
+                            <span className="text-brand-text-dim text-[11px] italic py-1">No students enrolled</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="border-t border-brand-border/30 pt-2 flex flex-col gap-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-brand-primary text-[11px] tracking-[0.5px] uppercase">Add Students</span>
+                        <div className="relative flex-1 max-w-[160px]">
+                          <Search className="absolute left-[6px] top-1/2 -translate-y-1/2 text-brand-text-dim" size={12} />
+                          <input type="text" placeholder="Search..." value={studentSearch}
+                            onChange={(e) => setStudentSearch(e.target.value)}
+                            className="w-full bg-white border border-brand-border text-brand-text placeholder-brand-text-dim/60 rounded-[6px] pl-[22px] pr-[6px] py-[3px] text-[11px] focus:outline-none" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1 max-h-[140px] overflow-y-auto">
+                        {allStudents
+                          .filter((s: any) => s.is_active !== false)
+                          .filter((s: any) => !enrolledStudents.some((e: any) => e.mahasiswa_id === s.mahasiswa_id))
+                          .filter((s: any) => !studentSearch || s.nama?.toLowerCase().includes(studentSearch.toLowerCase()) || s.nim?.toLowerCase().includes(studentSearch.toLowerCase()))
+                          .map((s: any) => (
+                            <div key={s.mahasiswa_id} className="flex items-center justify-between text-[11px] p-1.5 bg-slate-50 rounded">
+                              <span className="truncate max-w-[180px] font-medium">{s.nama}</span>
+                              <button onClick={() => handleToggleEnroll(item.jadwal_id, s.mahasiswa_id)} className="text-emerald-500 hover:text-emerald-700 cursor-pointer p-1" title="Enroll">
+                                <UserPlus size={13} />
+                              </button>
+                            </div>
+                          ))}
+                        {allStudents.filter((s: any) => !enrolledStudents.some((e: any) => e.mahasiswa_id === s.mahasiswa_id)).length === 0 && (
+                          <span className="text-brand-text-dim text-[11px] italic">All students enrolled</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )) : (
+              <div className="p-8 text-center text-brand-text-dim italic bg-white rounded-[12px] border border-brand-border/40">No schedule elements match search filter.</div>
+            )}
+          </div>
+
+          {/* md and above: Table */}
+          <div className="hidden md:block w-full overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="bg-slate-50 border-b border-brand-border text-brand-text-dim text-[11px] font-bold uppercase tracking-[1px]">
@@ -210,12 +324,12 @@ export default function AdminSchedule() {
                 {filteredSchedule.length > 0 ? filteredSchedule.map((item, idx) => [
                   <tr key={item.jadwal_id} className={cn("border-b border-brand-border/40 hover:bg-slate-50/50 transition-colors", idx % 2 === 1 ? "bg-slate-50/10" : "bg-white")}>
                     <td className="px-[24px] py-[18px]">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-[14px] text-brand-primary leading-tight">{item.mata_kuliah?.nama_mk}</span>
-                        <span className="font-mono text-brand-text-dim text-[11px] uppercase mt-0.5">{item.mata_kuliah?.kode_mk} &bull; {item.mata_kuliah?.sks} SKS</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-bold text-[14px] text-brand-primary leading-tight truncate whitespace-nowrap max-w-[180px] xl:max-w-[240px]">{item.mata_kuliah?.nama_mk}</span>
+                        <span className="font-mono text-brand-text-dim text-[11px] uppercase mt-0.5 whitespace-nowrap">{item.mata_kuliah?.kode_mk} &bull; {item.mata_kuliah?.sks} SKS</span>
                       </div>
                     </td>
-                    <td className="px-[24px] py-[18px]">
+                    <td className="px-[24px] py-[18px] whitespace-nowrap">
                       <button onClick={() => handleToggleExpand(item.jadwal_id)}
                         className="flex items-center gap-[6px] font-semibold text-brand-text text-[13px] hover:text-brand-primary cursor-pointer group">
                         <Users size={14} className="text-slate-400 group-hover:text-brand-primary" />
@@ -225,29 +339,29 @@ export default function AdminSchedule() {
                       </button>
                     </td>
                     <td className="px-[24px] py-[18px]">
-                      <div className="flex items-center gap-[8px]">
-                        <span className="font-bold text-brand-text text-[13px]">{item.dosen?.nama || "Unassigned"}</span>
+                      <div className="flex items-center gap-[8px] min-w-0">
+                        <span className="font-bold text-brand-text text-[13px] truncate whitespace-nowrap max-w-[140px] xl:max-w-[180px]">{item.dosen?.nama || "Unassigned"}</span>
                         <button onClick={(e) => handleDropdownClick("lecturer", item.jadwal_id, e)}
-                          className="p-1 hover:bg-slate-100 rounded text-brand-text-dim hover:text-brand-text cursor-pointer"><ChevronDown size={14} /></button>
+                          className="p-1 hover:bg-slate-100 rounded text-brand-text-dim hover:text-brand-text cursor-pointer shrink-0"><ChevronDown size={14} /></button>
                       </div>
                     </td>
-                    <td className="px-[24px] py-[18px] text-brand-text-dim text-[12px] font-medium">
+                    <td className="px-[24px] py-[18px] text-brand-text-dim text-[12px] font-medium whitespace-nowrap">
                       <div className="flex items-center gap-[6px]">
                         <Clock size={12} className="text-slate-400" />
-                        <span>{item.hari}, {item.waktu_mulai} - {item.waktu_selesai}</span>
+                        <span>{item.hari}, {formatHHMM(item.waktu_mulai)} - {formatHHMM(item.waktu_selesai)}</span>
                       </div>
                     </td>
                     <td className="px-[24px] py-[18px]">
-                      <div className="flex items-center gap-[8px]">
-                        <div className="flex items-center gap-[6px] text-brand-text font-semibold text-[13px]">
-                          <MapPin size={12} className="text-slate-400" />
-                          <span>{item.ruangan?.nama_ruangan || "Unassigned"}</span>
+                      <div className="flex items-center gap-[8px] min-w-0">
+                        <div className="flex items-center gap-[6px] text-brand-text font-semibold text-[13px] min-w-0">
+                          <MapPin size={12} className="text-slate-400 shrink-0" />
+                          <span className="truncate whitespace-nowrap max-w-[140px] xl:max-w-[180px]">{item.ruangan?.nama_ruangan || "Unassigned"}</span>
                         </div>
                         <button onClick={(e) => handleDropdownClick("room", item.jadwal_id, e)}
-                          className="p-1 hover:bg-slate-100 rounded text-brand-text-dim hover:text-brand-text cursor-pointer"><ChevronDown size={14} /></button>
+                          className="p-1 hover:bg-slate-100 rounded text-brand-text-dim hover:text-brand-text cursor-pointer shrink-0"><ChevronDown size={14} /></button>
                       </div>
                     </td>
-                    <td className="px-[24px] py-[18px]">
+                    <td className="px-[24px] py-[18px] whitespace-nowrap">
                       {item.status === "assigned" && <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-[8px] py-[4px] rounded-full uppercase tracking-[0.5px]">Assigned</span>}
                       {item.status === "unassigned" && <span className="bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold px-[8px] py-[4px] rounded-full uppercase tracking-[0.5px]">Lec Missing</span>}
                       {item.status === "room-missing" && <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold px-[8px] py-[4px] rounded-full uppercase tracking-[0.5px]">Room Missing</span>}
@@ -330,28 +444,28 @@ export default function AdminSchedule() {
           </div>
         </div>
 
-        <div className="lg:col-span-3 flex flex-col gap-[24px] w-full">
-          <div className="bg-white border border-brand-border rounded-[16px] p-[24px] flex flex-col gap-[20px] shadow-sm">
+        <div className="xl:col-span-3 order-1 xl:order-2 flex flex-col gap-[20px] sm:gap-[24px] w-full">
+          <div className="bg-white border border-brand-border rounded-[16px] p-[16px] sm:p-[20px] xl:p-[24px] flex flex-col gap-[16px] xl:gap-[20px] shadow-sm">
             <h3 className="font-bold text-brand-primary text-[14px] tracking-[1px] uppercase">Scheduling Summary</h3>
-            <div className="flex flex-col gap-[16px]">
-              <div className="flex justify-between items-center border-b border-brand-border/40 pb-3">
-                <span className="text-[13px] text-brand-text-dim font-medium">Total Course Slots</span>
-                <span className="font-extrabold text-brand-primary text-[18px]">{totalSlots}</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-1 gap-[12px] sm:gap-[16px] xl:gap-[16px]">
+              <div className="border border-brand-border/40 p-[12px] rounded-[10px] bg-slate-50/50 flex flex-col justify-between">
+                <span className="text-[11px] sm:text-[12px] text-brand-text-dim font-bold uppercase tracking-[0.5px]">Total Slots</span>
+                <span className="font-extrabold text-brand-primary text-[18px] sm:text-[20px] mt-1">{totalSlots}</span>
               </div>
-              <div className="flex justify-between items-center border-b border-brand-border/40 pb-3">
-                <span className="text-[13px] text-brand-text-dim font-medium">Assigned Slots</span>
-                <span className="font-extrabold text-emerald-600 text-[18px]">{assignedSlots}</span>
+              <div className="border border-brand-border/40 p-[12px] rounded-[10px] bg-slate-50/50 flex flex-col justify-between">
+                <span className="text-[11px] sm:text-[12px] text-brand-text-dim font-bold uppercase tracking-[0.5px]">Assigned</span>
+                <span className="font-extrabold text-emerald-600 text-[18px] sm:text-[20px] mt-1">{assignedSlots}</span>
               </div>
-              <div className="flex justify-between items-center border-b border-brand-border/40 pb-3">
-                <span className="text-[13px] text-brand-text-dim font-medium">Unassigned Lecturer</span>
-                <span className="font-extrabold text-red-600 text-[18px]">{unassignedSlots}</span>
+              <div className="border border-brand-border/40 p-[12px] rounded-[10px] bg-slate-50/50 flex flex-col justify-between">
+                <span className="text-[11px] sm:text-[12px] text-brand-text-dim font-bold uppercase tracking-[0.5px]">No Lecturer</span>
+                <span className="font-extrabold text-red-600 text-[18px] sm:text-[20px] mt-1">{unassignedSlots}</span>
               </div>
-              <div className="flex justify-between items-center pb-1">
-                <span className="text-[13px] text-brand-text-dim font-medium">Unassigned Room</span>
-                <span className="font-extrabold text-amber-600 text-[18px]">{roomMissingSlots}</span>
+              <div className="border border-brand-border/40 p-[12px] rounded-[10px] bg-slate-50/50 flex flex-col justify-between">
+                <span className="text-[11px] sm:text-[12px] text-brand-text-dim font-bold uppercase tracking-[0.5px]">No Room</span>
+                <span className="font-extrabold text-amber-600 text-[18px] sm:text-[20px] mt-1">{roomMissingSlots}</span>
               </div>
             </div>
-            <div className="flex flex-col gap-[8px] mt-2">
+            <div className="flex flex-col gap-[8px] mt-1">
               <div className="flex justify-between text-[11px] font-bold text-brand-primary">
                 <span>ALLOCATION PROGRESS</span>
                 <span>{totalSlots > 0 ? Math.round((assignedSlots / totalSlots) * 100) : 0}%</span>
@@ -362,7 +476,7 @@ export default function AdminSchedule() {
               </div>
             </div>
           </div>
-          <div className="bg-brand-surface border border-brand-border rounded-[16px] p-[20px] flex items-start gap-[12px]">
+          <div className="hidden xl:flex bg-brand-surface border border-brand-border rounded-[16px] p-[20px] items-start gap-[12px]">
             <HelpCircle className="text-brand-secondary shrink-0 mt-0.5" size={18} />
             <div className="flex flex-col gap-[4px] text-[12px] text-brand-text-dim leading-relaxed">
               <span className="font-bold text-brand-primary">Tip</span>
