@@ -13,3 +13,7 @@ docs/laporan/
 supabase/scripts/create-auth-users.ps1
 .neon
 .env.local
+
+# verification output
+screenshots-verify/
+.openchamber/

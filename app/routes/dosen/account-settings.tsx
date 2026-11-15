@@ -103,9 +103,6 @@ export default function AccountSettings() {
           <ArrowLeft size={20} />
         </Link>
         <div className="flex flex-col items-start">
-          <span className="font-semibold text-brand-text-dim text-[11px] tracking-[1px] uppercase">
-            Account
-          </span>
           <h1 className="font-bold text-brand-primary text-[28px] tracking-[-0.5px]">
             Account Settings
           </h1>
