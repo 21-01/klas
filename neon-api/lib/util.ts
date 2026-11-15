@@ -29,7 +29,9 @@ export function toCsv(headers: string[], rows: unknown[][]): string {
 }
 
 const JAKARTA_OFFSET_MS = 7 * 60 * 60 * 1000;
-const DAY_NAMES = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+// hari_enum has no "Minggu" (Sunday) — classes never run on Sundays, so map it
+// to null and let callers treat Sunday as "no scheduled day".
+const DAY_NAMES: (string | null)[] = [null, "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 /** Today's date in Asia/Jakarta as YYYY-MM-DD. */
 export function jakartaToday(): string {
@@ -40,7 +42,7 @@ export function jakartaToday(): string {
 export function jakartaDayName(isoDate: string): string {
   // Noon +07:00 keeps the UTC calendar day equal to the Jakarta calendar day.
   const date = new Date(`${isoDate}T12:00:00+07:00`);
-  return DAY_NAMES[date.getUTCDay()];
+  return DAY_NAMES[date.getUTCDay()] ?? "Senin";
 }
 
 /** Generates `count` day labels ending today (Asia/Jakarta), oldest first. */
