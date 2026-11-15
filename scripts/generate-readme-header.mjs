@@ -76,6 +76,8 @@ function compose() {
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="12" stdDeviation="20" flood-color="#000000" flood-opacity="0.4"/>
     </filter>
+    <!-- mobile screenshot clipped to the bezel's inner radius (34 display px = 66 viewBox units) -->
+    <clipPath id="mobScreen"><rect x="0" y="0" width="390" height="844" rx="66"/></clipPath>
   </defs>`);
 
   parts.push(`<rect width="${W}" height="${H}" fill="url(#bg)"/>`);
@@ -89,13 +91,13 @@ function compose() {
   parts.push(diamond(46, 540, 0.11, "rgba(255,255,255,0.05)"));
 
   // ── brand block — left column ──
-  parts.push(diamond(64, 60, 0.15, WHITE));
-  parts.push(text(118, 112, "KLAS", 46, WHITE, 800, "start", `letter-spacing="1"`));
-  parts.push(text(119, 140, "Your Location, Your Attendance", 15, "rgba(255,255,255,0.75)", 600, "start", `letter-spacing="1.5"`));
+  parts.push(diamond(64, 64, 0.16, WHITE));
+  parts.push(text(122, 118, "KLAS", 50, WHITE, 800, "start", `letter-spacing="1"`));
+  parts.push(text(123, 148, "Your Location, Your Attendance", 16, "rgba(255,255,255,0.75)", 600, "start", `letter-spacing="1.5"`));
 
-  parts.push(text(66, 196, "Geospatial Presence", 19, WHITE, 800, "start", `letter-spacing="-0.2"`));
-  parts.push(text(66, 222, "Verification System", 19, WHITE, 800, "start", `letter-spacing="-0.2"`));
-  parts.push(text(66, 254, "Dynamic QR · GPS Geofencing · Campus IP Filter", 13, "rgba(255,255,255,0.65)", 600, "start"));
+  parts.push(text(66, 208, "Geospatial Presence", 21, WHITE, 800, "start", `letter-spacing="-0.2"`));
+  parts.push(text(66, 236, "Verification System", 21, WHITE, 800, "start", `letter-spacing="-0.2"`));
+  parts.push(text(66, 270, "Dynamic QR · GPS Geofencing · Campus IP Filter", 14, "rgba(255,255,255,0.65)", 600, "start"));
 
   // ── desktop mockup — center-right (sidebar unobstructed) ──
   // screenshot is 1440x900 (2x scale = 2880x1800 actual px)
@@ -128,7 +130,7 @@ function compose() {
 
   parts.push(`<g filter="url(#shadow)">`);
   parts.push(`<rect x="${mx - bezel}" y="${my - bezel}" width="${mw + bezel * 2}" height="${mh + bezel * 2}" rx="42" fill="#0b0f1a"/>`);
-  parts.push(`<svg x="${mx}" y="${my}" width="${mw}" height="${mh}" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice">
+  parts.push(`<svg x="${mx}" y="${my}" width="${mw}" height="${mh}" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice" clip-path="url(#mobScreen)">
     <image href="data:image/png;base64,${b64(mobilePng)}" x="0" y="0" width="390" height="844"/>
   </svg>`);
   parts.push(`</g>`);
