@@ -60,7 +60,8 @@ changePassword(userId, currentPassword, newPassword): Promise<void>
 ## Demo credentials
 
 All demo users share the password in `scripts/auth-users.mjs`
-(`KlasDemo#2026`). `public.users.user_id` equals the Neon Auth user id.
+(`klasdemo`). `public.users.user_id` equals the Neon Auth user id.
+Full account list: [`docs/DEMO_GUIDE.md`](../docs/DEMO_GUIDE.md).
 
 ---
 

@@ -14,6 +14,16 @@ pnpm install
 pnpm dev
 ```
 
+## Documentation
+
+| Document | Contents |
+| --- | --- |
+| [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md) | **Start here for a demo**: accounts, environment setup, a 15-minute presentation flow, and troubleshooting |
+| [`docs/PROJECT_EXPLANATION.md`](docs/PROJECT_EXPLANATION.md) | What the project is, why this architecture, core data flows, security model |
+| [`docs/features.md`](docs/features.md) | Feature list per page (frontend) |
+| [`neon-api/CONTRACT.md`](neon-api/CONTRACT.md) | API endpoint contract (source of truth) |
+| [`docs/architecture/neon.md`](docs/architecture/neon.md) | Backend architecture and migration notes |
+
 ## Overview
 
 The system leverages:
@@ -107,8 +117,9 @@ pnpm smoke
 ### Database
 
 - Schema: `supabase/migrations/001..004` (canonical) plus `neon/sql/001_functions.sql`
-- Seed data: `supabase/seed.sql` and `scripts/seed.mjs`
-- Auth users: `scripts/auth-users.mjs` (Neon Auth Admin API)
+- Demo dataset: `scripts/reset-demo.mjs` (full wipe) → `scripts/auth-users.mjs`
+  (6 users, password `klasdemo`) → `scripts/seed.mjs` — see
+  [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md)
 
 ---
 
