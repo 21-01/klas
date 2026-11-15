@@ -52,32 +52,35 @@ on conflict (role) do nothing;
 
 do $$
 declare
-  a_admin uuid; a_dosen uuid; a_nandana uuid; a_nadine uuid; a_fathya uuid;
+  a_admin uuid; a_dosen1 uuid; a_dosen2 uuid; a_mhs1 uuid; a_mhs2 uuid; a_mhs3 uuid;
 begin
-  select user_id into a_admin   from users where email = 'admin@klas.unj.ac.id';
-  select user_id into a_dosen   from users where email = 'samudra.adi@unj.ac.id';
-  select user_id into a_nandana from users where email = 'nandana.ammar@mhs.unj.ac.id';
-  select user_id into a_nadine  from users where email = 'nadine.alysha@mhs.unj.ac.id';
-  select user_id into a_fathya  from users where email = 'fathya.khairani@mhs.unj.ac.id';
+  select user_id into a_admin  from users where email = 'admin@klas.unj.ac.id';
+  select user_id into a_dosen1 from users where email = 'budi.santoso@unj.ac.id';
+  select user_id into a_dosen2 from users where email = 'siti.rahma@unj.ac.id';
+  select user_id into a_mhs1   from users where email = 'ahmad.fauzi@mhs.unj.ac.id';
+  select user_id into a_mhs2   from users where email = 'dewi.lestari@mhs.unj.ac.id';
+  select user_id into a_mhs3   from users where email = 'rizki.pratama@mhs.unj.ac.id';
 
-  if a_admin is null or a_dosen is null or a_nandana is null or a_nadine is null or a_fathya is null then
+  if a_admin is null or a_dosen1 is null or a_dosen2 is null or a_mhs1 is null or a_mhs2 is null or a_mhs3 is null then
     raise exception 'demo auth users missing: run scripts/auth-users.mjs first';
   end if;
 
   insert into dosen (dosen_id, user_id, nip, nidn, nama, prodi_id, jenis_kelamin) values
-    ('b0000000-0000-0000-0000-000000000001', a_dosen,
-     '199507312024061001', '0031079501', 'Samudra Adi Guna', 1, 'L');
+    ('b0000000-0000-0000-0000-000000000001', a_dosen1,
+     '199003152024061001', '0028039001', 'Budi Santoso', 1, 'L'),
+    ('b0000000-0000-0000-0000-000000000002', a_dosen2,
+     '199211202025061002', '0045112002', 'Siti Rahma',   1, 'P');
 
   insert into mahasiswa (mahasiswa_id, user_id, nim, nama, prodi_id, angkatan, jenis_kelamin, gpa, pembimbing_akademik) values
-    ('c0000000-0000-0000-0000-000000000001', a_nandana, '1202410001', 'Nandana Ammar Triabimanyu', 1, '2024', 'L', 3.85, 'Samudra Adi Guna'),
-    ('c0000000-0000-0000-0000-000000000002', a_nadine,  '1202410002', 'Nadine Alysha Maheswari',   1, '2024', 'P', 3.95, 'Samudra Adi Guna'),
-    ('c0000000-0000-0000-0000-000000000003', a_fathya,  '1202410003', 'Fathya Khairani R',         1, '2024', 'P', 3.70, 'Samudra Adi Guna');
+    ('c0000000-0000-0000-0000-000000000001', a_mhs1, '1202410001', 'Ahmad Fauzi',   1, '2024', 'L', 3.80, 'Budi Santoso'),
+    ('c0000000-0000-0000-0000-000000000002', a_mhs2, '1202410002', 'Dewi Lestari',  1, '2024', 'P', 3.90, 'Siti Rahma'),
+    ('c0000000-0000-0000-0000-000000000003', a_mhs3, '1202410003', 'Rizki Pratama', 1, '2024', 'L', 3.65, 'Budi Santoso');
 
   insert into jadwal_kelas (jadwal_id, mk_id, dosen_id, ruangan_id, hari, waktu_mulai, waktu_selesai, semester, tahun_akademik, status, quota) values
     ('f0000000-0000-0000-0000-000000000001', 'd0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000001', 'Senin',  '08:00', '10:30', 'Ganjil 2025/2026', '2025/2026', 'assigned', 40),
-    ('f0000000-0000-0000-0000-000000000002', 'd0000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000002', 'Selasa', '08:00', '10:30', 'Ganjil 2025/2026', '2025/2026', 'assigned', 40),
+    ('f0000000-0000-0000-0000-000000000002', 'd0000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000002', 'Selasa', '08:00', '10:30', 'Ganjil 2025/2026', '2025/2026', 'assigned', 40),
     ('f0000000-0000-0000-0000-000000000003', 'd0000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000003', 'Rabu',   '08:00', '10:30', 'Ganjil 2025/2026', '2025/2026', 'assigned', 40),
-    ('f0000000-0000-0000-0000-000000000004', 'd0000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000004', 'Kamis',  '08:00', '10:30', 'Ganjil 2025/2026', '2025/2026', 'assigned', 40),
+    ('f0000000-0000-0000-0000-000000000004', 'd0000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000004', 'Kamis',  '08:00', '10:30', 'Ganjil 2025/2026', '2025/2026', 'assigned', 40),
     ('f0000000-0000-0000-0000-000000000005', 'd0000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000005', 'Jumat',  '08:00', '10:30', 'Ganjil 2025/2026', '2025/2026', 'assigned', 40);
 
   insert into pendaftaran_kelas (mahasiswa_id, jadwal_id)

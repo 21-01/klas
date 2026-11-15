@@ -87,16 +87,21 @@ pnpm build           # frontend build
 
 ## Demo data
 
-`scripts/auth-users.mjs` creates five users (password `KlasDemo#2026`):
+`scripts/auth-users.mjs` creates six users (password `klasdemo`):
 
 | Email | Role |
 | --- | --- |
 | admin@klas.unj.ac.id | admin |
-| samudra.adi@unj.ac.id | dosen |
-| nandana.ammar@mhs.unj.ac.id | mahasiswa |
-| nadine.alysha@mhs.unj.ac.id | mahasiswa |
-| fathya.khairani@mhs.unj.ac.id | mahasiswa |
+| budi.santoso@unj.ac.id | dosen |
+| siti.rahma@unj.ac.id | dosen |
+| ahmad.fauzi@mhs.unj.ac.id | mahasiswa |
+| dewi.lestari@mhs.unj.ac.id | mahasiswa |
+| rizki.pratama@mhs.unj.ac.id | mahasiswa |
 
 `scripts/seed.mjs` adds one prodi, five courses, ten rooms, five schedules
-(one per weekday, all taught by Samudra Adi Guna) and enrolls all three students
-in every schedule.
+(split across Budi Santoso and Siti Rahma, one per weekday) and enrolls all
+three students in every schedule.
+
+To reset the demo data from scratch: `node --env-file=.env.local
+scripts/reset-demo.mjs` wipes every app table and all Neon Auth users, then run
+`scripts/auth-users.mjs` and `node scripts/seed.mjs` again.

@@ -12,14 +12,15 @@ for (const line of raw.split(/\r?\n/)) {
 }
 
 const BASE = env.NEON_AUTH_BASE_URL;
-const DEMO_PASSWORD = "KlasDemo#2026";
+const DEMO_PASSWORD = "klasdemo";
 
 const users = [
   { email: "admin@klas.unj.ac.id", name: "Admin", role: "admin" },
-  { email: "samudra.adi@unj.ac.id", name: "Samudra Adi Guna", role: "dosen" },
-  { email: "nandana.ammar@mhs.unj.ac.id", name: "Nandana Ammar Triabimanyu", role: "mahasiswa" },
-  { email: "nadine.alysha@mhs.unj.ac.id", name: "Nadine Alysha Maheswari", role: "mahasiswa" },
-  { email: "fathya.khairani@mhs.unj.ac.id", name: "Fathya Khairani R", role: "mahasiswa" },
+  { email: "budi.santoso@unj.ac.id", name: "Budi Santoso", role: "dosen" },
+  { email: "siti.rahma@unj.ac.id", name: "Siti Rahma", role: "dosen" },
+  { email: "ahmad.fauzi@mhs.unj.ac.id", name: "Ahmad Fauzi", role: "mahasiswa" },
+  { email: "dewi.lestari@mhs.unj.ac.id", name: "Dewi Lestari", role: "mahasiswa" },
+  { email: "rizki.pratama@mhs.unj.ac.id", name: "Rizki Pratama", role: "mahasiswa" },
 ];
 
 async function signUp(u) {
