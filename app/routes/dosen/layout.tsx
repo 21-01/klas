@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Outlet, NavLink, Link, useNavigate, redirect } from "react-router";
 import ClickAwayListener from "~/components/ClickAwayListener";
-import { Bell, Settings, LogOut, AlertCircle, CheckCircle, BellDot } from "lucide-react";
+import Drawer from "~/components/Drawer";
+import { Bell, Settings, LogOut, AlertCircle, CheckCircle, BellDot, Menu } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { api, clearProfileCache } from "~/lib/api";
 
@@ -39,6 +40,7 @@ export default function DosenLayout() {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [user, setUser] = useState({ name: "", email: "", initials: "" });
   const [notifications, setNotifications] = useState<NotifItem[]>([]);
   const [notifCount, setNotifCount] = useState(0);
@@ -74,26 +76,35 @@ export default function DosenLayout() {
     <div className="min-h-screen bg-brand-bg flex flex-col font-sans w-full text-brand-text">
       {/* Desktop Portal Header Navigation */}
       <header className="bg-white border-b border-brand-border sticky top-0 z-50 w-full">
-        <div className="max-w-[1280px] mx-auto px-[24px] h-[72px] flex items-center justify-between">
+        <div className="max-w-[1280px] mx-auto px-[16px] sm:px-[24px] h-[64px] sm:h-[72px] flex items-center justify-between gap-[8px]">
+
+          {/* Mobile Navigation Trigger */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="lg:hidden -ml-2 p-2 text-brand-text-dim hover:text-brand-text rounded-full transition-colors cursor-pointer shrink-0"
+            aria-label="Open navigation"
+          >
+            <Menu size={20} />
+          </button>
 
           {/* Logo Brand */}
-          <div className="flex items-center gap-[12px]">
-            <img src="/logo.svg" alt="KLAS Logo" className="h-[36px] w-auto" />
-            <span className="font-extrabold text-[24px] tracking-tight text-brand-primary">KLAS</span>
-            <span className="bg-brand-secondary/10 text-brand-secondary font-bold text-[10px] tracking-[0.5px] uppercase px-[8px] py-[2px] rounded">
+          <div className="flex items-center gap-[12px] min-w-0">
+            <img src="/logo.svg" alt="KLAS Logo" className="h-[36px] w-auto shrink-0" />
+            <span className="font-extrabold text-[20px] sm:text-[24px] tracking-tight text-brand-primary truncate">KLAS</span>
+            <span className="hidden sm:inline-block bg-brand-secondary/10 text-brand-secondary font-bold text-[10px] tracking-[0.5px] uppercase px-[8px] py-[2px] rounded shrink-0">
               LECTURER
             </span>
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex gap-[32px] items-center h-full">
+          <nav className="hidden lg:flex gap-[32px] items-center h-full">
             <NavItem to="/dosen" exact label="Dashboard" />
             <NavItem to="/dosen/attendance" label="Attendance" />
             <NavItem to="/dosen/report" label="Report" />
           </nav>
 
           {/* Right Side Tools & Profile */}
-          <div className="flex items-center gap-[20px]">
+          <div className="flex items-center gap-[12px] sm:gap-[20px]">
 
             {/* Notifications Dropdown */}
             <div className="relative">
@@ -113,7 +124,7 @@ export default function DosenLayout() {
               </button>
 
               {showNotifications && (
-                <ClickAwayListener onClickAway={() => setShowNotifications(false)} className="absolute right-0 mt-3 w-[400px] bg-white border border-brand-border rounded-[12px] shadow-lg p-[24px] z-50 text-left flex flex-col gap-[16px] animate-in fade-in slide-in-from-top-2 duration-150">
+                <ClickAwayListener onClickAway={() => setShowNotifications(false)} className="fixed left-[16px] right-[16px] top-[64px] sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-[400px] bg-white border border-brand-border rounded-[12px] shadow-lg p-[16px] sm:p-[24px] z-50 text-left flex flex-col gap-[16px] animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex items-center justify-between border-b border-brand-border/40 pb-[12px]">
                     <span className="font-bold text-brand-primary text-[17px]">Notifications</span>
                     {notifications.length > 0 && (
@@ -176,14 +187,14 @@ export default function DosenLayout() {
                 <div className="size-[36px] bg-brand-secondary text-white font-bold text-[14px] flex items-center justify-center rounded-[10px] shadow-sm shrink-0">
                   {user.initials || "—"}
                 </div>
-                <div className="hidden md:flex flex-col">
-                  <span className="font-semibold text-[13px] leading-tight text-brand-text">{user.name || "Lecturer"}</span>
-                  <span className="text-brand-text-dim text-[11px]">{user.email}</span>
+                <div className="hidden lg:flex flex-col min-w-0">
+                  <span className="font-semibold text-[13px] leading-tight text-brand-text truncate max-w-[180px]">{user.name || "Lecturer"}</span>
+                  <span className="text-brand-text-dim text-[11px] truncate max-w-[180px]">{user.email}</span>
                 </div>
               </button>
 
               {showProfile && (
-                <ClickAwayListener onClickAway={() => setShowProfile(false)} className="absolute right-0 mt-3 w-[320px] bg-white border border-brand-border rounded-[12px] shadow-lg p-[24px] z-50 text-left flex flex-col gap-[16px] animate-in fade-in slide-in-from-top-2 duration-150">
+                <ClickAwayListener onClickAway={() => setShowProfile(false)} className="fixed left-[16px] right-[16px] top-[64px] sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-[320px] bg-white border border-brand-border rounded-[12px] shadow-lg p-[16px] sm:p-[24px] z-50 text-left flex flex-col gap-[16px] animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex items-center gap-[14px] border-b border-brand-border/40 pb-[14px]">
                     <div className="size-[48px] bg-brand-secondary text-white font-extrabold text-[20px] flex items-center justify-center rounded-[10px] shadow-sm shrink-0">
                       {user.initials || "—"}
@@ -217,8 +228,17 @@ export default function DosenLayout() {
         </div>
       </header>
 
+      {/* Mobile Drawer Navigation — below lg */}
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Lecturer Portal">
+        <nav className="px-[16px] py-[24px] flex flex-col gap-[8px]">
+          <NavItem to="/dosen" exact label="Dashboard" variant="drawer" onNavigate={() => setDrawerOpen(false)} />
+          <NavItem to="/dosen/attendance" label="Attendance" variant="drawer" onNavigate={() => setDrawerOpen(false)} />
+          <NavItem to="/dosen/report" label="Report" variant="drawer" onNavigate={() => setDrawerOpen(false)} />
+        </nav>
+      </Drawer>
+
       {/* Main Viewport Content Area */}
-      <main className="flex-1 w-full max-w-[1280px] mx-auto px-[24px] py-[32px] flex flex-col justify-start">
+      <main className="flex-1 w-full max-w-[1280px] mx-auto px-[16px] sm:px-[24px] py-[20px] sm:py-[32px] flex flex-col justify-start">
         <Outlet />
       </main>
     </div>
@@ -229,19 +249,28 @@ interface NavItemProps {
   to: string;
   label: string;
   exact?: boolean;
+  variant?: "inline" | "drawer";
+  onNavigate?: () => void;
 }
 
-function NavItem({ to, label, exact }: NavItemProps) {
+function NavItem({ to, label, exact, variant = "inline", onNavigate }: NavItemProps) {
   return (
     <NavLink
       to={to}
       end={exact}
+      onClick={onNavigate}
       className={({ isActive }) =>
         cn(
-          "font-bold text-[13px] tracking-[0.8px] uppercase h-[72px] flex items-center px-[8px] border-b-2 transition-all duration-200 cursor-pointer",
-          isActive
-            ? "border-brand-primary text-brand-primary"
-            : "border-transparent text-brand-text-dim hover:text-brand-text hover:border-brand-border"
+          variant === "inline"
+            ? "font-bold text-[13px] tracking-[0.8px] uppercase h-[72px] flex items-center px-[8px] border-b-2 transition-all duration-200 cursor-pointer"
+            : "font-bold text-[13px] tracking-[0.5px] uppercase w-full flex items-center px-[16px] py-[12px] rounded-[8px] border-l-4 transition-all duration-150 cursor-pointer",
+          variant === "inline"
+            ? isActive
+              ? "border-brand-primary text-brand-primary"
+              : "border-transparent text-brand-text-dim hover:text-brand-text hover:border-brand-border"
+            : isActive
+              ? "bg-white/10 text-white border-white"
+              : "text-slate-300 border-transparent hover:bg-white/5 hover:text-white"
         )
       }
     >
