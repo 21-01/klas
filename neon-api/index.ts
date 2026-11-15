@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { corsHeaders, fail } from "./lib/http.ts";
 import { HttpError } from "./lib/http.ts";
+import { env } from "./lib/env.ts";
 import authRoutes from "./routes/auth.ts";
 import attendanceRoutes from "./routes/attendance.ts";
 import dosenRoutes from "./routes/dosen.ts";
@@ -14,6 +15,21 @@ app.options("*", (c) => new Response(null, { status: 204, headers: corsHeaders(c
 
 app.get("/", (c) => c.json({ ok: true, service: "klas-api" }));
 app.get("/health", async (c) => c.json({ ok: true, service: "klas-api" }));
+
+// Public feature flags the browser may read (no auth required, nothing secret).
+app.get("/config", (c) =>
+  c.json(
+    {
+      ok: true,
+      demoMode: env.demoMode,
+      disabledFeatures: env.demoMode
+        ? ["delete-students", "delete-lecturers", "delete-courses", "delete-schedules", "delete-rooms", "delete-prodi", "unenroll-students", "delete-sessions"]
+        : [],
+    },
+    200,
+    corsHeaders(c),
+  ),
+);
 
 // One sub-app per domain; each route path mirrors the old edge-function name so
 // the browser client contract stays `POST /<function-name>`.

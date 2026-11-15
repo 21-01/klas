@@ -3,6 +3,7 @@ import { z } from "zod";
 import { uuid as uuidSchema } from "../lib/ids.ts";
 import { many, one, run, transaction, isUniqueViolation } from "../lib/db.ts";
 import { badRequest, conflict, notFound, ok, text, assertMutable } from "../lib/http.ts";
+import { env } from "../lib/env.ts";
 import { getClientIp, requireAdmin, type AppUser } from "../lib/auth.ts";
 import { audit, type AuditCategory } from "../lib/audit.ts";
 import { lastNDates, paginate, round2, toCsv } from "../lib/util.ts";
@@ -907,6 +908,11 @@ app.post("/crud-mahasiswa", async (c) => {
     );
     if (!existing) throw notFound("Mahasiswa not found");
 
+    // Deactivation removes the row from active demo data — same guard as delete.
+    if (env.demoMode && fields.is_active === false) {
+      assertMutable("Deactivating students");
+    }
+
     let linkedUserId = existing.user_id;
     let newAuthUserId: string | null = null;
     const { sets, params } = buildUpdate(fields, [
@@ -1117,6 +1123,10 @@ app.post("/crud-dosen", async (c) => {
     );
     if (!existing) throw notFound("Dosen not found");
 
+    if (env.demoMode && fields.is_active === false) {
+      assertMutable("Deactivating lecturers");
+    }
+
     let linkedUserId = existing.user_id;
     let newAuthUserId: string | null = null;
     const { sets, params } = buildUpdate(fields, [
@@ -1272,6 +1282,10 @@ app.post("/crud-mata-kuliah", async (c) => {
     const { action: _action, mk_id, ...fields } = data;
     const { sets, params } = buildUpdate(fields, ["kode_mk", "nama_mk", "sks", "prodi_id", "is_active"]);
     if (sets.length === 0) throw badRequest("No fields to update");
+
+    if (env.demoMode && fields.is_active === false) {
+      assertMutable("Deactivating courses");
+    }
 
     params.push(mk_id);
     try {
@@ -1436,6 +1450,10 @@ app.post("/crud-jadwal", async (c) => {
       [jadwal_id],
     );
     if (!existing) throw notFound("Jadwal not found");
+
+    if (env.demoMode && fields.is_active === false) {
+      assertMutable("Deactivating schedules");
+    }
 
     const resolvedDosen = fields.dosen_id !== undefined ? fields.dosen_id : existing.dosen_id;
     const resolvedRuangan = fields.ruangan_id !== undefined ? fields.ruangan_id : existing.ruangan_id;
@@ -1621,8 +1639,13 @@ app.post("/crud-ruangan", async (c) => {
       "latitude",
       "longitude",
       "geofence_radius_m",
+      "is_active",
     ]);
     if (sets.length === 0) throw badRequest("No fields to update");
+
+    if (env.demoMode && fields.is_active === false) {
+      assertMutable("Deactivating rooms");
+    }
 
     const existing = await one<{ kode_ruangan: string; nama_ruangan: string }>(
       `select kode_ruangan, nama_ruangan from ruangan where ruangan_id = $1`,

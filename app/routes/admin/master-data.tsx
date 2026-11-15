@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
+import { api, isFeatureDisabled, DEMO_NOTICE } from "~/lib/api";
 import { Plus, Search, Filter, Edit2, Trash2, RotateCcw, ChevronLeft, ChevronRight, UserPlus, BookOpen, UserCheck, X, Loader2 } from "lucide-react";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import { cn } from "~/lib/utils";
-import { api } from "~/lib/api";
 import { useToast } from "~/components/Toast";
 
 export function meta() {
@@ -14,6 +14,7 @@ export function meta() {
 export default function AdminMasterData() {
   const toast = useToast();
   const [activeTab, setActiveTab] = useState<"mahasiswa" | "dosen" | "matakuliah">("mahasiswa");
+  const [demoLocked, setDemoLocked] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [prodiFilter, setProdiFilter] = useState("all");
   const [yearFilter, setYearFilter] = useState("all");
@@ -61,6 +62,9 @@ export default function AdminMasterData() {
   };
 
   useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    isFeatureDisabled("delete-students").then(setDemoLocked);
+  }, []);
 
   const handleTabChange = (tab: "mahasiswa" | "dosen" | "matakuliah") => {
     setActiveTab(tab);
@@ -101,6 +105,11 @@ export default function AdminMasterData() {
 
   const toggleStatus = async (id: string, type: "student" | "lecturer" | "course") => {
     const label = type === "student" ? "Student" : type === "lecturer" ? "Lecturer" : "Course";
+    const feature = type === "student" ? "delete-students" : type === "lecturer" ? "delete-lecturers" : "delete-courses";
+    if (await isFeatureDisabled(feature)) {
+      toast.warning(DEMO_NOTICE, { title: "Demo mode" });
+      return;
+    }
     try {
       if (type === "student") {
         await api.crudMahasiswa("update", { mahasiswa_id: id, is_active: !students.find((s: any) => s.mahasiswa_id === id)?.is_active });
@@ -118,6 +127,11 @@ export default function AdminMasterData() {
 
   const handleDelete = async (id: string, type: "student" | "lecturer" | "course") => {
     const label = type === "student" ? "Student" : type === "lecturer" ? "Lecturer" : "Course";
+    const feature = type === "student" ? "delete-students" : type === "lecturer" ? "delete-lecturers" : "delete-courses";
+    if (await isFeatureDisabled(feature)) {
+      toast.warning(DEMO_NOTICE, { title: "Demo mode" });
+      return;
+    }
     try {
       if (type === "student") await api.crudMahasiswa("update", { mahasiswa_id: id, is_active: false });
       else if (type === "lecturer") await api.crudDosen("update", { dosen_id: id, is_active: false });
@@ -364,9 +378,16 @@ export default function AdminMasterData() {
                       <RotateCcw size={14} /><span>Activate</span>
                     </button>
                   ) : (
-                    <button onClick={() => handleDelete(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
-                      className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-[6px] transition-colors cursor-pointer flex items-center gap-1 text-[12px]">
+                    <button
+                      onClick={() => handleDelete(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
+                      title={demoLocked ? "Disabled in demo mode" : `Delete ${activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course"}`}
+                      aria-disabled={demoLocked}
+                      className={cn("p-1.5 rounded-[6px] transition-colors flex items-center gap-1 text-[12px]",
+                        demoLocked
+                          ? "text-brand-text-dim/40 bg-slate-50 cursor-not-allowed"
+                          : "text-red-600 hover:text-red-800 hover:bg-red-50 cursor-pointer")}>
                       <Trash2 size={14} /><span>Delete</span>
+                      {demoLocked && <span className="text-[9px] font-bold uppercase tracking-[0.5px] bg-slate-200 text-slate-500 px-[5px] py-[1px] rounded">Demo</span>}
                     </button>
                   )}
                 </div>
@@ -458,8 +479,14 @@ export default function AdminMasterData() {
                         <button onClick={() => toggleStatus(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
                           className="p-2 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-[6px] transition-colors cursor-pointer"><RotateCcw size={16} /></button>
                       ) : (
-                        <button onClick={() => handleDelete(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
-                          className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-[6px] transition-colors cursor-pointer"><Trash2 size={16} /></button>
+                        <button
+                          onClick={() => handleDelete(row.mahasiswa_id || row.dosen_id || row.mk_id, activeTab === "mahasiswa" ? "student" : activeTab === "dosen" ? "lecturer" : "course")}
+                          title={demoLocked ? "Disabled in demo mode" : "Delete"}
+                          aria-disabled={demoLocked}
+                          className={cn("p-2 rounded-[6px] transition-colors",
+                            demoLocked
+                              ? "text-brand-text-dim/40 bg-slate-50 cursor-not-allowed"
+                              : "text-red-600 hover:text-red-800 hover:bg-red-50 cursor-pointer")}><Trash2 size={16} /></button>
                       )}
                     </div>
                   </td>

@@ -60,6 +60,42 @@ async function invoke<T>(fn: string, body?: unknown): Promise<T> {
   return data as T;
 }
 
+// ─── Demo mode (KLAS_DEMO_MODE on the API) ───────────────
+// The API publishes which features are disabled; the UI greys them out and
+// explains why instead of letting the user hit a 403.
+let configCache: { data: DemoConfig; expiry: number } | null = null;
+const CONFIG_TTL = 5 * 60 * 1000;
+
+interface DemoConfig {
+  demoMode: boolean;
+  disabledFeatures: string[];
+}
+
+export async function getDemoConfig(): Promise<DemoConfig> {
+  const now = Date.now();
+  if (configCache && now < configCache.expiry) return configCache.data;
+  try {
+    const res = await fetch(`${import.meta.env.VITE_NEON_API_URL}/config`);
+    const data = (await res.json()) as DemoConfig;
+    configCache = { data, expiry: now + CONFIG_TTL };
+    return data;
+  } catch {
+    // API unreachable — assume nothing is disabled rather than locking the UI.
+    const fallback: DemoConfig = { demoMode: false, disabledFeatures: [] };
+    configCache = { data: fallback, expiry: now + CONFIG_TTL };
+    return fallback;
+  }
+}
+
+/** True when KLAS_DEMO_MODE disabled this feature (e.g. "delete-students"). */
+export async function isFeatureDisabled(feature: string): Promise<boolean> {
+  const config = await getDemoConfig();
+  return config.disabledFeatures.includes(feature);
+}
+
+export const DEMO_NOTICE =
+  "This feature is disabled in demo mode to protect the seed data.";
+
 export const api = {
   // ─── Auth ───────────────────────────────────────────
   login(req: LoginRequest) {

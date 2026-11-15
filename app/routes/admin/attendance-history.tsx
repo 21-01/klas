@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Calendar, Clock, Users, Trash2, RotateCcw, Edit3, ExternalLink, Loader2, ChevronDown, X } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { api } from "~/lib/api";
+import { api, isFeatureDisabled, DEMO_NOTICE } from "~/lib/api";
 import { useToast } from "~/components/Toast";
 import type { SessionHistoryItem } from "~/lib/types";
 
@@ -19,6 +19,11 @@ export default function AdminAttendanceHistory() {
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [courseInfo, setCourseInfo] = useState<any>(null);
+  const [demoLocked, setDemoLocked] = useState(false);
+
+  useEffect(() => {
+    isFeatureDisabled("delete-sessions").then(setDemoLocked);
+  }, []);
 
   const [editingSession, setEditingSession] = useState<SessionHistoryItem | null>(null);
   const [editTanggal, setEditTanggal] = useState("");
@@ -245,11 +250,20 @@ export default function AdminAttendanceHistory() {
                           <span>Reopen</span>
                         </button>
                         <button
-                          onClick={() => setConfirmDelete(session)}
-                          className="bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 text-[12px] font-bold py-[8px] px-[16px] rounded-[8px] transition-all flex items-center gap-2 cursor-pointer"
+                          onClick={() => {
+                            if (demoLocked) { toast.warning(DEMO_NOTICE, { title: "Demo mode" }); return; }
+                            setConfirmDelete(session);
+                          }}
+                          title={demoLocked ? "Disabled in demo mode" : "Delete session"}
+                          aria-disabled={demoLocked}
+                          className={cn("border text-[12px] font-bold py-[8px] px-[16px] rounded-[8px] transition-all flex items-center gap-2",
+                            demoLocked
+                              ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                              : "bg-red-50 border-red-200 hover:bg-red-100 text-red-600 cursor-pointer")}
                         >
                           <Trash2 size={14} />
                           <span>Delete</span>
+                          {demoLocked && <span className="text-[9px] font-bold uppercase tracking-[0.5px] bg-slate-200 text-slate-500 px-[5px] py-[1px] rounded">Demo</span>}
                         </button>
                       </>
                     )}
