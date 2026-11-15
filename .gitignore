@@ -17,3 +17,5 @@ supabase/scripts/create-auth-users.ps1
 # verification output
 screenshots-verify/
 .openchamber/
+
+docs/assets/*.png
