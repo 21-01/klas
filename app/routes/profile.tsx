@@ -36,16 +36,16 @@ export default function Profile() {
     <div className="bg-brand-bg min-h-full flex flex-col items-start relative w-full text-brand-text">
       <TopAppBar />
 
-      <div className="flex flex-col gap-[24px] items-start pb-[128px] pt-[32px] px-[24px] w-full">
+      <div className="flex flex-col gap-[24px] items-start pb-[128px] pt-[20px] sm:pt-[32px] px-[16px] sm:px-[24px] w-full">
 
         <div className="bg-white border border-brand-border flex flex-col p-[20px] rounded-[10px] shadow-sm w-full gap-[16px]">
-          <div className="flex items-center gap-[16px]">
+          <div className="flex items-center gap-[12px] sm:gap-[16px]">
             <div className="size-[64px] bg-brand-secondary text-white flex items-center justify-center rounded-full font-bold text-[24px] tracking-tight shrink-0">
               {profile.initials}
             </div>
-            <div className="flex flex-col">
-              <h2 className="font-bold text-[18px]">{profile.name}</h2>
-              <span className="text-brand-text-dim text-[12px] font-medium tracking-[0.4px]">
+            <div className="flex flex-col min-w-0">
+              <h2 className="font-bold text-[18px] break-words">{profile.name}</h2>
+              <span className="text-brand-text-dim text-[12px] font-medium tracking-[0.4px] truncate">
                 {profile.classInfo}
               </span>
             </div>

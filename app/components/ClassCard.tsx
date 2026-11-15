@@ -25,11 +25,11 @@ const cardStyles = {
 export default function ClassCard({ variant, time, title, location, lecturer, action, className }: ClassCardProps) {
   return (
     <div className={cn(
-      "border flex items-center justify-between px-[20px] py-[20px] rounded-[10px] w-full",
+      "border flex items-center justify-between gap-[8px] px-[16px] py-[16px] sm:px-[20px] sm:py-[20px] rounded-[10px] w-full",
       cardStyles[variant],
       className
     )}>
-      <div className="flex flex-col gap-[12px] items-start flex-1 min-w-0 mr-4">
+      <div className="flex flex-col gap-[12px] items-start flex-1 min-w-0 mr-2 sm:mr-4">
         <div className="flex gap-[8px] items-center">
           <StatusPill variant={variant} />
           <span className="font-semibold text-brand-text-muted text-[12px] tracking-[0.6px]">
@@ -61,7 +61,7 @@ export default function ClassCard({ variant, time, title, location, lecturer, ac
       {action ? (
         <Link
           to={action.to}
-          className="bg-brand-primary hover:bg-brand-secondary active:scale-95 transition-all text-white font-semibold text-[11px] tracking-[1.2px] uppercase px-[16px] py-[10px] rounded text-center shadow-md shrink-0"
+          className="bg-brand-primary hover:bg-brand-secondary active:scale-95 transition-all text-white font-semibold text-[11px] tracking-[1.2px] uppercase px-[12px] sm:px-[16px] py-[10px] rounded text-center shadow-md shrink-0 whitespace-nowrap"
         >
           {action.label}
         </Link>

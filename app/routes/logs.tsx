@@ -27,19 +27,16 @@ export default function ClassLogs() {
     <div className="bg-brand-bg min-h-full flex flex-col items-start w-full text-brand-text">
       <TopAppBar />
 
-      <div className="flex flex-col gap-[24px] items-start pb-[128px] pt-[32px] px-[24px] w-full">
+      <div className="flex flex-col gap-[24px] items-start pb-[128px] pt-[20px] sm:pt-[32px] px-[16px] sm:px-[24px] w-full">
 
         <div className="flex flex-col gap-[4px] items-start w-full">
-          <span className="font-semibold text-brand-text-dim text-[12px] tracking-[1.2px] uppercase">
-            ACADEMIC STANDING
-          </span>
           <h2 className="font-extrabold text-[24px] tracking-[-0.24px] text-brand-secondary">
             Total Attendance: {attendance}
           </h2>
           <div className="bg-brand-secondary h-[4px] w-[96px] mt-1" />
         </div>
 
-        <div className="flex items-end justify-between w-full pt-[20px]">
+        <div className="flex flex-wrap items-end justify-between gap-[4px] w-full pt-[16px] sm:pt-[20px]">
           <h3 className="font-semibold text-brand-text text-[18px]">
             Class Logs
           </h3>
@@ -70,7 +67,7 @@ export default function ClassLogs() {
                   </span>
                 </div>
 
-                <div className="bg-[rgba(255,255,255,0.5)] border border-brand-border flex items-center justify-center py-[6px] px-[16px] rounded-md shrink-0">
+                <div className="bg-[rgba(255,255,255,0.5)] border border-brand-border flex items-center justify-center py-[6px] px-[10px] sm:px-[16px] rounded-md shrink-0">
                   <span className={cn(
                     "font-semibold text-[12px] tracking-[0.6px]",
                     isPresent ? "text-emerald-700" : "text-status-error"

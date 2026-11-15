@@ -76,7 +76,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast: { show, success, error, info, warning } }}>
       {children}
-      <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 flex flex-col gap-3 max-w-full sm:w-[420px] pointer-events-none">
+      <div className="fixed bottom-[92px] right-4 left-4 sm:bottom-6 sm:left-auto sm:right-6 z-50 flex flex-col gap-3 max-w-full sm:w-[420px] pointer-events-none">
         {toasts.map((item) => (
           <ToastCard key={item.id} item={item} onDismiss={remove} />
         ))}
@@ -128,7 +128,7 @@ function ToastCard({ item, onDismiss }: { item: ToastItem; onDismiss: (id: strin
   return (
     <div
       className={cn(
-        "pointer-events-auto flex items-start gap-4 p-5 rounded-xl border border-brand-border/40 shadow-[0_10px_35px_rgb(0,0,0,0.08)] backdrop-blur-md transition-all duration-300 transform",
+        "pointer-events-auto flex items-start gap-4 p-4 sm:p-5 rounded-xl border border-brand-border/40 shadow-[0_10px_35px_rgb(0,0,0,0.08)] backdrop-blur-md transition-all duration-300 transform",
         exiting ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0 animate-toast-slide-in",
         config.bg,
         config.border
@@ -140,7 +140,7 @@ function ToastCard({ item, onDismiss }: { item: ToastItem; onDismiss: (id: strin
       <div className="shrink-0 mt-0.5">{config.icon}</div>
       <div className="flex-1 min-w-0">
         {title && (
-          <div className="text-[13px] font-bold text-brand-text leading-tight mb-0.5">{title}</div>
+          <div className="text-[13px] font-bold text-brand-text leading-tight mb-0.5 truncate">{title}</div>
         )}
         <div className="text-[14px] font-medium text-brand-text leading-snug">{message}</div>
         {action && (

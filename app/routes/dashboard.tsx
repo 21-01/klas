@@ -27,7 +27,7 @@ export default function Dashboard() {
     <div className="bg-brand-bg min-h-full flex flex-col items-start relative w-full text-brand-text">
       <TopAppBar />
 
-      <div className="flex flex-col gap-[32px] items-start pb-[96px] pt-[32px] px-[24px] w-full">
+      <div className="flex flex-col gap-[32px] items-start pb-[96px] pt-[20px] sm:pt-[32px] px-[16px] sm:px-[24px] w-full">
         <div className="flex flex-col gap-[3px] items-start w-full">
           <span className="font-semibold text-brand-text-muted text-[11px] tracking-[0.6px] uppercase">
             {date}
