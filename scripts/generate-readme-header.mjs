@@ -91,9 +91,14 @@ function compose() {
   parts.push(diamond(46, 540, 0.11, "rgba(255,255,255,0.05)"));
 
   // ── brand block — left column ──
-  parts.push(diamond(64, 64, 0.16, WHITE));
-  parts.push(text(122, 118, "KLAS", 50, WHITE, 800, "start", `letter-spacing="1"`));
-  parts.push(text(123, 148, "Your Location, Your Attendance", 16, "rgba(255,255,255,0.75)", 600, "start", `letter-spacing="1.5"`));
+  // Logo spans from the top of the KLAS title to the baseline of the tagline.
+  // KLAS baseline y=118, tagline baseline y=148 → block ≈ y 74..148 (height ~74).
+  // Diamond svg is 224 units tall: scale = 74/224 ≈ 0.33.
+  const logoScale = 0.33;
+  const logoTop = 74; // = KLAS cap height start
+  parts.push(diamond(66, logoTop, logoScale, WHITE));
+  parts.push(text(152, 118, "KLAS", 50, WHITE, 800, "start", `letter-spacing="1"`));
+  parts.push(text(153, 148, "Your Location, Your Attendance", 16, "rgba(255,255,255,0.75)", 600, "start", `letter-spacing="1.5"`));
 
   parts.push(text(66, 208, "Geospatial Presence", 21, WHITE, 800, "start", `letter-spacing="-0.2"`));
   parts.push(text(66, 236, "Verification System", 21, WHITE, 800, "start", `letter-spacing="-0.2"`));
