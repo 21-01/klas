@@ -97,30 +97,6 @@ function compose() {
   parts.push(text(66, 222, "Verification System", 19, WHITE, 800, "start", `letter-spacing="-0.2"`));
   parts.push(text(66, 254, "Dynamic QR · GPS Geofencing · Campus IP Filter", 13, "rgba(255,255,255,0.65)", 600, "start"));
 
-  // chips that fit before the desktop window starts (dx = 500)
-  const chips = ["React 19", "Neon Postgres", "Realtime"];
-  let chipX = 66;
-  chips.forEach((c) => {
-    const w = 24 + c.length * 8.2;
-    parts.push(`<rect x="${chipX}" y="284" width="${w}" height="30" rx="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)"/>`);
-    parts.push(text(chipX + w / 2, 304, c, 12.5, WHITE, 700, "middle"));
-    chipX += w + 12;
-  });
-
-  // role labels under chips
-  parts.push(text(66, 372, "Three portals, one platform", 14, "rgba(255,255,255,0.85)", 700, "start"));
-  const roles = [
-    ["Admin", "analytics · master data · audit"],
-    ["Dosen", "live sessions · QR · corrections"],
-    ["Mahasiswa", "scan QR · logs · profile"],
-  ];
-  roles.forEach(([role, sub], i) => {
-    const ry = 404 + i * 56;
-    parts.push(`<rect x="66" y="${ry - 22}" width="370" height="44" rx="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.18)"/>`);
-    parts.push(text(84, ry, role, 14, WHITE, 800, "start"));
-    parts.push(text(84 + 108, ry, sub, 12, "rgba(255,255,255,0.6)", 500, "start"));
-  });
-
   // ── desktop mockup — center-right (sidebar unobstructed) ──
   // screenshot is 1440x900 (2x scale = 2880x1800 actual px)
   const dw = 620;                    // display width
@@ -157,9 +133,6 @@ function compose() {
   </svg>`);
   parts.push(`</g>`);
   parts.push(`<rect x="${mx - bezel}" y="${my - bezel}" width="${mw + bezel * 2}" height="${mh + bezel * 2}" rx="42" fill="none" stroke="rgba(255,255,255,0.25)"/>`);
-
-  // ── footer caption ──
-  parts.push(text(66, H - 30, "Admin console (desktop)   ·   Student app (mobile)", 13, "rgba(255,255,255,0.55)", 600, "start"));
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="KLAS banner: admin dashboard on desktop and student app on mobile, real screenshots">${parts.join("")}</svg>`;
 }
